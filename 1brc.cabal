@@ -133,3 +133,6 @@ test-suite 1brc-test
     build-depends:
         base ^>=4.18.2.1,
         1brc
+
+    build-tool-depends: hspec-discover:hspec-discover
+
