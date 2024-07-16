@@ -60,9 +60,16 @@ common warnings
       -Wpartial-fields
       -Wredundant-constraints
 
+common extensions
+    default-extensions:
+        NoImplicitPrelude
+        OverloadedStrings
+
 library
     -- Import common warning flags.
-    import:           warnings
+    import:
+        warnings,
+        extensions
 
     -- Modules exported by the library.
     exposed-modules:
@@ -74,10 +81,6 @@ library
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-
-    default-extensions:
-        NoImplicitPrelude
-        OverloadedStrings
 
     -- Other library packages from which modules are imported.
     build-depends:
@@ -92,7 +95,9 @@ library
 
 executable 1brc
     -- Import common warning flags.
-    import:           warnings
+    import:
+        warnings,
+        extensions
 
     -- .hs or .lhs file containing the Main module.
     main-is:          Main.hs
@@ -103,10 +108,6 @@ executable 1brc
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-
-    default-extensions:
-        NoImplicitPrelude
-        OverloadedStrings
 
     -- Other library packages from which modules are imported.
     build-depends:
@@ -123,7 +124,9 @@ executable 1brc
 
 test-suite 1brc-test
     -- Import common warning flags.
-    import:           warnings
+    import:
+        warnings,
+        extensions
 
     -- Base language which the package is written in.
     default-language: GHC2021

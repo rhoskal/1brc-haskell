@@ -9,18 +9,9 @@ import RIO
 import RIO.Process
 import Types
 
-optionsParser :: IO (Options, ())
-optionsParser = do
-  simpleOptions
-    $(simpleVersion Paths_1brc.version)
-    "Header for command line arguments"
-    "Run different variations of the 1brc"
-    (Options <$> switch (long "verbose" <> short 'v' <> help "Verbose output?"))
-    empty
-
 main :: IO ()
 main = do
-  (options, ()) <- optionsParser
+  (options, ()) <- optsParser
   logOpts <- logOptionsHandle stderr (optionsVerbose options)
   processCtx <- mkDefaultProcessContext
   withLogFunc logOpts $ \logFn ->
@@ -31,3 +22,12 @@ main = do
               appProcessContext = processCtx
             }
      in runRIO app runV0
+
+optsParser :: IO (Options, ())
+optsParser = do
+  simpleOptions
+    $(simpleVersion Paths_1brc.version)
+    "Header for command line arguments"
+    "Run different variations of the 1brc"
+    (Options <$> switch (long "verbose" <> short 'v' <> help "Verbose output?"))
+    empty
