@@ -1,8 +1,8 @@
-module MyLib (runV0) where
+module V0 (run) where
 
 import RIO
 import Types
 
-runV0 :: RIO App ()
-runV0 = do
+run :: RIO App ()
+run = do
   logDebug "Running v0 (naive)..."

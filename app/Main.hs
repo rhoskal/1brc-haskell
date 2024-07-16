@@ -1,12 +1,12 @@
 module Main where
 
-import Data.Version qualified as V
-import MyLib (runV0)
-import Options.Applicative.Simple
+import Data.Version (Version, showVersion)
+import Options.Applicative
 import Paths_1brc qualified as Meta
 import RIO
 import RIO.Process (mkDefaultProcessContext)
 import Types
+import V0 qualified
 
 main :: IO ()
 main = do
@@ -20,7 +20,7 @@ main = do
               appOptions = opts,
               appProcessContext = processCtx
             }
-     in runRIO app runV0
+     in runRIO app V0.run
 
 optsParser :: ParserInfo AppOptions
 optsParser =
@@ -36,8 +36,8 @@ versionParser =
     (prettyVersion Meta.version)
     (long "version" <> help "Show version")
   where
-    prettyVersion :: V.Version -> [Char]
-    prettyVersion = (++) "1brc v" . V.showVersion
+    prettyVersion :: Version -> [Char]
+    prettyVersion = (++) "1brc v" . showVersion
 
 programOptions :: Parser AppOptions
 programOptions =

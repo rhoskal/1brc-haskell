@@ -73,9 +73,9 @@ library
 
     -- Modules exported by the library.
     exposed-modules:
-        MyLib
         Parser
         Types
+        V0
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -114,7 +114,7 @@ executable 1brc
     build-depends:
         base ^>=4.18.2.1,
         1brc,
-        optparse-simple,
+        optparse-applicative,
         rio
 
     -- Directories containing source files.
