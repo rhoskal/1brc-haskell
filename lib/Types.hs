@@ -4,13 +4,14 @@ import RIO
 import RIO.Process
 
 -- | Command line arguments
-newtype Options = Options
-  { optionsVerbose :: Bool
+newtype AppOptions = AppOptions
+  { aoDebug :: Bool
   }
+  deriving (Show)
 
 data App = App
   { appLogFn :: !LogFunc,
-    appOptions :: !Options,
+    appOptions :: !AppOptions,
     appProcessContext :: !ProcessContext
   }
 

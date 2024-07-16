@@ -2,32 +2,53 @@
 
 module Main where
 
+import Data.Version qualified as V
 import MyLib (runV0)
 import Options.Applicative.Simple
-import Paths_1brc qualified
+import Paths_1brc qualified as Meta
 import RIO
-import RIO.Process
+import RIO.Process (mkDefaultProcessContext)
 import Types
 
 main :: IO ()
 main = do
-  (options, ()) <- optsParser
-  logOpts <- logOptionsHandle stderr (optionsVerbose options)
+  opts <- customExecParser (prefs showHelpOnEmpty) optsParser
+  logOpts <- logOptionsHandle stderr $ aoDebug opts
   processCtx <- mkDefaultProcessContext
   withLogFunc logOpts $ \logFn ->
     let app =
           App
             { appLogFn = logFn,
-              appOptions = options,
+              appOptions = opts,
               appProcessContext = processCtx
             }
      in runRIO app runV0
 
-optsParser :: IO (Options, ())
-optsParser = do
-  simpleOptions
-    $(simpleVersion Paths_1brc.version)
-    "Header for command line arguments"
-    "Run different variations of the 1brc"
-    (Options <$> switch (long "verbose" <> short 'v' <> help "Verbose output?"))
-    empty
+optsParser :: ParserInfo AppOptions
+optsParser =
+  info (helper <*> versionParser <*> programOptions)
+    $ fullDesc
+    <> header "1 Billion Row Challenge"
+    <> progDesc "Run different variations of the 1brc"
+    <> footer "For more information, please visit https://1brc.dev"
+
+versionParser :: Parser (a -> a)
+versionParser =
+  infoOption
+    (prettyVersion Meta.version)
+    (long "version" <> help "Show version")
+  where
+    prettyVersion :: V.Version -> [Char]
+    prettyVersion = (++) "1brc v" . V.showVersion
+
+programOptions :: Parser AppOptions
+programOptions =
+  AppOptions
+    <$> debugParser
+
+debugParser :: Parser Bool
+debugParser =
+  switch
+    $ long "debug"
+    <> short 'd'
+    <> help "Output information useful for debugging"
