@@ -2,11 +2,7 @@ module Parser where
 
 import RIO
 
-data Row = Row
-  { rowCity :: !Text,
-    rowTemperature :: !Float
-  }
-  deriving (Eq, Show)
+data Row = Row Text Text deriving (Eq, Show)
 
-parse :: ()
-parse = undefined
+parseRow :: Text -> Row
+parseRow = undefined

@@ -10,7 +10,7 @@ import V0 qualified
 
 main :: IO ()
 main = do
-  opts <- customExecParser (prefs showHelpOnEmpty) optsParser
+  opts <- customExecParser (prefs showHelpOnEmpty) parseOpts
   logOpts <- logOptionsHandle stderr $ aoDebug opts
   processCtx <- mkDefaultProcessContext
   withLogFunc logOpts $ \logFn ->
@@ -22,16 +22,16 @@ main = do
             }
      in runRIO app V0.run
 
-optsParser :: ParserInfo AppOptions
-optsParser =
-  info (helper <*> versionParser <*> programOptions)
+parseOpts :: ParserInfo AppOptions
+parseOpts =
+  info (helper <*> parseVersion <*> programOptions)
     $ fullDesc
     <> header "1 Billion Row Challenge"
     <> progDesc "Run different variations of the 1brc"
     <> footer "For more information, please visit https://1brc.dev"
 
-versionParser :: Parser (a -> a)
-versionParser =
+parseVersion :: Parser (a -> a)
+parseVersion =
   infoOption
     (prettyVersion Meta.version)
     (long "version" <> help "Show version")
@@ -42,21 +42,22 @@ versionParser =
 programOptions :: Parser AppOptions
 programOptions =
   AppOptions
-    <$> debugParser
-    <*> filePathParser
+    <$> parseDebug
+    <*> parseFilePath
+    <*> parseImpl
 
-debugParser :: Parser Bool
-debugParser =
+parseDebug :: Parser Bool
+parseDebug =
   switch
     $ long "debug"
     <> short 'd'
     <> help "Output information useful for debugging"
 
-filePathParser :: Parser FilePath
-filePathParser =
+parseFilePath :: Parser FilePath
+parseFilePath =
   strOption
     $ long "file"
     <> short 'f'
-    <> metavar "<FILE_PATH>"
+    <> metavar "FILE_PATH"
     <> help "Path to measurements file"
 
