@@ -43,6 +43,7 @@ programOptions :: Parser AppOptions
 programOptions =
   AppOptions
     <$> debugParser
+    <*> filePathParser
 
 debugParser :: Parser Bool
 debugParser =
@@ -50,3 +51,12 @@ debugParser =
     $ long "debug"
     <> short 'd'
     <> help "Output information useful for debugging"
+
+filePathParser :: Parser FilePath
+filePathParser =
+  strOption
+    $ long "file"
+    <> short 'f'
+    <> metavar "<FILE_PATH>"
+    <> help "Path to measurements file"
+

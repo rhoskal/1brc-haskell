@@ -4,8 +4,9 @@ import RIO
 import RIO.Process
 
 -- | Command line arguments
-newtype AppOptions = AppOptions
-  { aoDebug :: Bool
+data AppOptions = AppOptions
+  { aoDebug :: !Bool,
+    aoFile :: !FilePath,
   }
   deriving (Show)
 
