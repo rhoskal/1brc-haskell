@@ -66,7 +66,8 @@ library
 
     -- Modules exported by the library.
     exposed-modules:
-      MyLib
+        MyLib
+        Types
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -74,8 +75,14 @@ library
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
 
+    default-extensions:
+        NoImplicitPrelude
+        OverloadedStrings
+
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.18.2.1
+    build-depends:
+        base ^>=4.18.2.1,
+        rio
 
     -- Directories containing source files.
     hs-source-dirs:   lib
@@ -91,15 +98,22 @@ executable 1brc
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:
+        Paths_1brc
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
 
+    default-extensions:
+        NoImplicitPrelude
+        OverloadedStrings
+
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.18.2.1,
-        1brc
+        1brc,
+        optparse-simple,
+        rio
 
     -- Directories containing source files.
     hs-source-dirs:   app
@@ -135,4 +149,3 @@ test-suite 1brc-test
         1brc
 
     build-tool-depends: hspec-discover:hspec-discover
-

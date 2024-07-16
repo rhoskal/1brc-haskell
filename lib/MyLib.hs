@@ -1,4 +1,8 @@
-module MyLib (someFunc) where
+module MyLib (runV0) where
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+import RIO
+import Types
+
+runV0 :: RIO App ()
+runV0 = do
+  logInfo "Running v0 (naive)..."
