@@ -20,6 +20,7 @@ let
   hooks = ''
     mkdir -p .nix-cabal
     export CABAL_DIR=$PWD/.nix-cabal
+    export PATH=$PWD/.nix-cabal/bin:$PATH
   '';
 in pkgs.stdenv.mkDerivation {
   name = "app";
