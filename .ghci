@@ -1,3 +1,4 @@
-:set -isrc -itest
+:set -ilib -itest -iapp
 :set +t
 :set +m
+:set prompt "λ> "
