@@ -9,7 +9,7 @@
 - First, a city name. There are cities, and each row has name chosen at random from the set. Their lengths are from **3** to **26** bytes.
 - Then a temperature, formatted as `-?\d?\d,\d`, i.e. a possibly negative number with one or two integral digits and exactly one decimal. Each temperature is drawn from a normal distribution for each city.
 
-**Output**: a sorted list of cities of the form `<city>: <min>/<avg>/<max>`, each formatted with one decimal place.
+**Output**: a sorted list of cities of the form `{<station name>:<min>/<average>/<max>}`, each formatted with one decimal place.
 
 ## Hardware
 
