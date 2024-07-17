@@ -58,6 +58,9 @@ charP input = Parser f
       | y == input = Just (ys, input)
       | otherwise = Nothing
 
+stringP :: String -> Parser String
+stringP = sequenceA . map charP
+
 many1 :: (Char -> Bool) -> Parser String
 many1 predicate = Parser $ \input ->
   let (matched, rest) = span predicate input
@@ -67,6 +70,13 @@ many1 predicate = Parser $ \input ->
 
 digitsP :: Parser String
 digitsP = many1 C.isDigit
+
+eol :: Parser String
+eol =
+  stringP "\n\r"
+    <|> stringP "\r\n"
+    <|> stringP "\n"
+    <|> stringP "\r"
 
 -- Parsers
 
@@ -94,7 +104,7 @@ pCelsius =
         )
 
 pMeasurement :: Parser Measurement
-pMeasurement = Measurement <$> pStation <*> (charP ';' *> pCelsius)
+pMeasurement = Measurement <$> pStation <*> (charP ';' *> pCelsius <* eol)
 
 parser :: String -> Maybe Measurement
 parser input = snd <$> runParser pMeasurement input
