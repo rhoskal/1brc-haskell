@@ -26,9 +26,9 @@ instance Applicative Parser where
 
   (<*>) :: Parser (a -> b) -> Parser a -> Parser b
   (<*>) (Parser p1) (Parser p2) = Parser $ \input -> do
-    (input', fn) <- p1 input
-    (input'', x) <- p2 input'
-    return (input'', fn x)
+    (rest, fn) <- p1 input
+    (rest', matched) <- p2 rest
+    return (rest', fn matched)
 
 instance Alternative Parser where
   empty :: Parser a
@@ -68,6 +68,12 @@ many1 predicate = Parser $ \input ->
         then Nothing
         else Just (rest, matched)
 
+optionalP :: Parser a -> Parser (Maybe a)
+optionalP (Parser p) = Parser $ \input ->
+  case p input of
+    Nothing -> Just (input, Nothing)
+    Just (rest, matched) -> Just (rest, Just matched)
+
 digitsP :: Parser String
 digitsP = many1 C.isDigit
 
@@ -93,15 +99,15 @@ pStation :: Parser Station
 pStation = Station <$> many1 ((/=) ';')
 
 pCelsius :: Parser Celsius
-pCelsius =
-  Celsius
-    <$> ( digitsP >>= \intPart ->
-            charP '.' >>= \_ ->
-              digitsP >>= \fracPart ->
-                case readMaybe (intPart ++ "." ++ fracPart) of
-                  Just floatValue -> return floatValue
-                  Nothing -> empty
-        )
+pCelsius = do
+  sign <- optionalP $ charP '-'
+  intPart <- digitsP
+  _ <- charP '.'
+  fracPart <- digitsP
+  let numStr = maybe "" (const "-") sign ++ intPart ++ "." ++ fracPart
+  case readMaybe numStr of
+    Just floatValue -> return (Celsius floatValue)
+    Nothing -> empty
 
 pMeasurement :: Parser Measurement
 pMeasurement = Measurement <$> pStation <*> (charP ';' *> pCelsius <* eol)
