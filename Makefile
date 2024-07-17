@@ -53,6 +53,10 @@ clean: ## Remove artificats
 format: ## Format code
 	ormolu --mode inplace **/*.hs
 
+.PHONY: repl
+repl: ## Run repl
+	cabal repl
+
 .PHONY: run
 run: ## Run project
 	cabal exec 1brc
