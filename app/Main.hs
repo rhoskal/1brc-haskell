@@ -44,7 +44,6 @@ programOptions =
   AppOptions
     <$> parseDebug
     <*> parseFilePath
-    <*> parseImpl
 
 parseDebug :: Parser Bool
 parseDebug =
@@ -60,11 +59,3 @@ parseFilePath =
     <> short 'f'
     <> metavar "FILE_PATH"
     <> help "Path to measurements file"
-
-parseImpl :: Parser Text
-parseImpl =
-  strOption
-    $ long "impl"
-    <> short 'i'
-    <> metavar "IMPL"
-    <> help "Implementation to run"

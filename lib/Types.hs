@@ -6,15 +6,9 @@ import RIO.Process
 -- | Command line arguments
 data AppOptions = AppOptions
   { aoDebug :: !Bool,
-    aoFilePath :: !FilePath,
-    aoImpl :: !Text
+    aoFilePath :: !FilePath
   }
   deriving (Show)
-
-data Impl
-  = V0
-  | V1
-  deriving (Eq, Show)
 
 data App = App
   { appLogFn :: !LogFunc,
