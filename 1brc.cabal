@@ -146,7 +146,7 @@ test-suite 1brc-test
     hs-source-dirs:   test
 
     -- The entrypoint to the test suite.
-    main-is:          Spec.hs
+    main-is:          Main.hs
 
     -- Test dependencies.
     build-depends:
@@ -155,5 +155,3 @@ test-suite 1brc-test
         hspec,
         QuickCheck,
         rio
-
-    build-tool-depends: hspec-discover:hspec-discover
