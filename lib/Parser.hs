@@ -110,7 +110,7 @@ pCelsius = do
     Nothing -> empty
 
 pMeasurement :: Parser Measurement
-pMeasurement = Measurement <$> pStation <*> (charP ';' *> pCelsius <* eol)
+pMeasurement = Measurement <$> pStation <*> (charP ';' *> pCelsius)
 
 parser :: String -> Maybe Measurement
 parser input = snd <$> runParser pMeasurement input

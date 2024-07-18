@@ -74,8 +74,8 @@ library
     -- Modules exported by the library.
     exposed-modules:
         Parser
+        Run
         Types
-        V0
 
     -- Modules included in this library but not exported.
     -- other-modules:

@@ -5,8 +5,8 @@ import Options.Applicative
 import Paths_1brc qualified as Meta
 import RIO
 import RIO.Process (mkDefaultProcessContext)
+import Run (run)
 import Types
-import V0 qualified
 
 main :: IO ()
 main = do
@@ -20,7 +20,7 @@ main = do
               appOptions = opts,
               appProcessContext = processCtx
             }
-     in runRIO app V0.run
+     in runRIO app run
 
 parseOpts :: ParserInfo AppOptions
 parseOpts =

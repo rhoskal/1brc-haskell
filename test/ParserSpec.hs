@@ -19,12 +19,12 @@ parserSpec = do
       $ \x y ->
         let stationName = "TestStation"
             celsiusStr = show (x :: Int) <> "." <> show (abs y :: Int)
-            input = stationName ++ ";" ++ celsiusStr ++ "\n"
+            input = stationName ++ ";" ++ celsiusStr
          in case parser input of
               Just (Measurement (Station s) (Celsius t)) ->
                 s == stationName && t == (read celsiusStr :: Float)
               _ -> False
     it "Should correctly handle an invalid row" $ do
-      parser "Bogotá,12.0\r" `shouldBe` Nothing
-      parser ";12.0\r\n" `shouldBe` Nothing
-      parser "Tokyo;12\n\r" `shouldBe` Nothing
+      parser "Bogotá,12.0" `shouldBe` Nothing
+      parser ";12.0" `shouldBe` Nothing
+      parser "Tokyo;12" `shouldBe` Nothing
