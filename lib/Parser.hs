@@ -110,12 +110,13 @@ data Measurement = Measurement
 
 instance Show Measurement where
   show m =
-    "Measurement ("
-      ++ (show $ mStation m)
-      ++ ") "
-      ++ "("
-      ++ (show $ mCelsius m)
-      ++ ")"
+    concat
+      [ "Measurement (",
+        show $ mStation m,
+        ") (",
+        show $ mCelsius m,
+        ")"
+      ]
 
 pStation :: Parser Station
 pStation = Station <$> many1 ((/=) ';')
