@@ -6,7 +6,7 @@ import RIO.Process
 -- | Command line arguments
 data AppOptions = AppOptions
   { aoDebug :: !Bool,
-    aoFile :: !FilePath,
+    aoFilePath :: !FilePath,
     aoImpl :: !Text
   }
   deriving (Show)
@@ -27,3 +27,9 @@ instance HasLogFunc App where
 
 instance HasProcessContext App where
   processContextL = lens appProcessContext (\x y -> x {appProcessContext = y})
+
+class HasAppOptions env where
+  appOptionsL :: Lens' env AppOptions
+
+instance HasAppOptions App where
+  appOptionsL = lens appOptions (\x y -> x {appOptions = y})
