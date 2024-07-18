@@ -58,8 +58,8 @@ charP input = Parser f
       | y == input = Just (ys, input)
       | otherwise = Nothing
 
-stringP :: String -> Parser String
-stringP = sequenceA . map charP
+-- stringP :: String -> Parser String
+-- stringP = sequenceA . map charP
 
 many1 :: (Char -> Bool) -> Parser String
 many1 predicate = Parser $ \input ->
@@ -77,23 +77,45 @@ optionalP (Parser p) = Parser $ \input ->
 digitsP :: Parser String
 digitsP = many1 C.isDigit
 
-eol :: Parser String
-eol =
-  stringP "\n\r"
-    <|> stringP "\r\n"
-    <|> stringP "\n"
-    <|> stringP "\r"
+-- eol :: Parser String
+-- eol =
+--   stringP "\n\r"
+--     <|> stringP "\r\n"
+--     <|> stringP "\n"
+--     <|> stringP "\r"
 
 -- Parsers
 
-newtype Station = Station String
-  deriving (Eq, Show)
+newtype Station = Station
+  { unStation :: String
+  }
+  deriving (Eq)
 
-newtype Celsius = Celsius Float
-  deriving (Eq, Show)
+instance Show Station where
+  show = (++) "Station " . unStation
 
-data Measurement = Measurement Station Celsius
-  deriving (Eq, Show)
+newtype Celsius = Celsius
+  { unCelsius :: Float
+  }
+  deriving (Eq)
+
+instance Show Celsius where
+  show = (++) "Celsius " . show . unCelsius
+
+data Measurement = Measurement
+  { mStation :: Station,
+    mCelsius :: Celsius
+  }
+  deriving (Eq)
+
+instance Show Measurement where
+  show m =
+    "Measurement ("
+      ++ (show $ mStation m)
+      ++ ") "
+      ++ "("
+      ++ (show $ mCelsius m)
+      ++ ")"
 
 pStation :: Parser Station
 pStation = Station <$> many1 ((/=) ';')
@@ -106,7 +128,7 @@ pCelsius = do
   fracPart <- digitsP
   let numStr = maybe "" (const "-") sign ++ intPart ++ "." ++ fracPart
   case readMaybe numStr of
-    Just floatValue -> return (Celsius floatValue)
+    Just floatValue -> return $ Celsius floatValue
     Nothing -> empty
 
 pMeasurement :: Parser Measurement
