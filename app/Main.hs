@@ -4,6 +4,7 @@ import Data.Version (Version, showVersion)
 import Options.Applicative
 import Paths_1brc qualified as Meta
 import RIO
+import RIO.PrettyPrint.StylesUpdate
 import RIO.Process (mkDefaultProcessContext)
 import Run (run)
 import Types
@@ -18,7 +19,10 @@ main = do
           App
             { appLogFn = logFn,
               appOptions = opts,
-              appProcessContext = processCtx
+              appProcessContext = processCtx,
+              appUseColor = True,
+              appTermWidth = 80,
+              appStylesUpdate = StylesUpdate []
             }
      in runRIO app run
 
