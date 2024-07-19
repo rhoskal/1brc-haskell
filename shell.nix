@@ -14,6 +14,7 @@ let
     pkgs.llvm
     pkgs.nixfmt
     pkgs.ormolu
+    pkgs.haskellPackages.hlint
     pkgs.haskellPackages.lsp
   ];
 

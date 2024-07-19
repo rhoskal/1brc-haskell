@@ -32,7 +32,7 @@ instance Applicative Parser where
 
 instance Alternative Parser where
   empty :: Parser a
-  empty = Parser $ \_ -> Nothing
+  empty = Parser $ const Nothing
 
   (<|>) :: Parser a -> Parser a -> Parser a
   (Parser p1) <|> (Parser p2) = Parser $ \input ->
@@ -64,7 +64,7 @@ charP input = Parser fn
 many1 :: (Char -> Bool) -> Parser String
 many1 predicate = Parser $ \input ->
   let (matched, rest) = span predicate input
-   in if (length matched == 0)
+   in if null matched
         then Nothing
         else Just (rest, matched)
 

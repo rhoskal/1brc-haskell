@@ -3,4 +3,4 @@ import RIO
 import Test.Hspec
 
 main :: IO ()
-main = hspec $ parserSpec
+main = hspec parserSpec
