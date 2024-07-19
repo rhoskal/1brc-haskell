@@ -25,7 +25,7 @@ instance Applicative Parser where
   pure x = Parser $ \input -> Just (input, x)
 
   (<*>) :: Parser (a -> b) -> Parser a -> Parser b
-  (<*>) (Parser p1) (Parser p2) = Parser $ \input -> do
+  (Parser p1) <*> (Parser p2) = Parser $ \input -> do
     (rest, fn) <- p1 input
     (rest', matched) <- p2 rest
     return (rest', fn matched)
@@ -35,14 +35,14 @@ instance Alternative Parser where
   empty = Parser $ \_ -> Nothing
 
   (<|>) :: Parser a -> Parser a -> Parser a
-  (<|>) (Parser p1) (Parser p2) = Parser $ \input ->
+  (Parser p1) <|> (Parser p2) = Parser $ \input ->
     p1 input <|> p2 input
 
 instance Monad Parser where
   (>>=) :: Parser a -> (a -> Parser b) -> Parser b
-  (Parser p1) >>= f = Parser $ \input -> do
+  (Parser p1) >>= fn = Parser $ \input -> do
     (rest, matched) <- p1 input
-    let Parser p2 = f matched
+    let Parser p2 = fn matched
      in p2 rest
 
   return :: a -> Parser a
@@ -51,10 +51,10 @@ instance Monad Parser where
 -- Combinators
 
 charP :: Char -> Parser Char
-charP input = Parser f
+charP input = Parser fn
   where
-    f [] = Nothing
-    f (y : ys)
+    fn [] = Nothing
+    fn (y : ys)
       | y == input = Just (ys, input)
       | otherwise = Nothing
 
