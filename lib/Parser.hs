@@ -103,8 +103,8 @@ instance Show Celsius where
   show = (++) "Celsius " . show . unCelsius
 
 data Measurement = Measurement
-  { mStation :: Station,
-    mCelsius :: Celsius
+  { mStation :: !Station,
+    mCelsius :: !Celsius
   }
   deriving (Eq)
 
