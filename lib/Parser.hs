@@ -89,7 +89,7 @@ digitsP = many1 C.isDigit
 newtype Station = Station
   { unStation :: String
   }
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 instance Show Station where
   show = (++) "Station " . unStation
@@ -97,7 +97,7 @@ instance Show Station where
 newtype Celsius = Celsius
   { unCelsius :: Float
   }
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 instance Show Celsius where
   show = (++) "Celsius " . show . unCelsius
@@ -106,7 +106,7 @@ data Measurement = Measurement
   { mStation :: !Station,
     mCelsius :: !Celsius
   }
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 instance Show Measurement where
   show m =
