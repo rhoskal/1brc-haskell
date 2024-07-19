@@ -49,6 +49,10 @@ clean: ## Remove artificats
 # Development targets
 # -------------------
 
+.PHONE: dev
+dev: ## Run ghcid
+	ghcid -c="cabal repl"
+
 .PHONY: format
 format: ## Format code
 	ormolu --mode inplace **/*.hs
