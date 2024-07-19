@@ -31,7 +31,7 @@ parseOpts =
   info (helper <*> parseVersion <*> programOptions)
     $ fullDesc
     <> header "1 Billion Row Challenge"
-    <> progDesc "Run different variations of the 1brc"
+    <> progDesc "Run the current aggregation implementation optimized for speed."
     <> footer "For more information, please visit https://1brc.dev"
 
 parseVersion :: Parser (a -> a)
@@ -47,7 +47,8 @@ programOptions :: Parser AppOptions
 programOptions =
   AppOptions
     <$> parseDebug
-    <*> parseFilePath
+    <*> parseInputFilePath
+    <*> parseOutputFilePath
 
 parseDebug :: Parser Bool
 parseDebug =
@@ -56,10 +57,19 @@ parseDebug =
     <> short 'd'
     <> help "Output information useful for debugging"
 
-parseFilePath :: Parser FilePath
-parseFilePath =
+parseInputFilePath :: Parser FilePath
+parseInputFilePath =
   strOption
     $ long "file"
     <> short 'f'
     <> metavar "FILE_PATH"
     <> help "Path to measurements file"
+
+parseOutputFilePath :: Parser (Maybe FilePath)
+parseOutputFilePath =
+  optional
+    $ strOption
+    $ long "output"
+    <> short 'o'
+    <> metavar "FILE_PATH"
+    <> help "Path to output calculations. Output will default to stdio if not provided."

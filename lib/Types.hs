@@ -8,7 +8,8 @@ import RIO.Process
 -- | Command line arguments
 data AppOptions = AppOptions
   { aoDebug :: !Bool,
-    aoFilePath :: !FilePath
+    aoInputFilePath :: !FilePath,
+    aoOutputFilePath :: !(Maybe FilePath)
   }
   deriving (Show)
 

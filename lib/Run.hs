@@ -10,8 +10,8 @@ run :: RIO App ()
 run = do
   env <- ask
   logDebug "Running v0 (naive)..."
-  content <- liftIO $ readFile $ aoFilePath $ view appOptionsL env
   let parsed = map parser $ lines content
+  content <- liftIO $ readFile $ aoInputFilePath $ view appOptionsL env
   logDebug
     =<< P.displayWithColor
       ( P.flow "First 10 measurements:"
