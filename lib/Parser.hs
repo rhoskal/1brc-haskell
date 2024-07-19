@@ -43,7 +43,7 @@ instance Monad Parser where
   (Parser p1) >>= fn = Parser $ \input -> do
     (rest, matched) <- p1 input
     let Parser p2 = fn matched
-     in p2 rest
+    p2 rest
 
   return :: a -> Parser a
   return = pure
@@ -119,7 +119,7 @@ instance Show Measurement where
       ]
 
 pStation :: Parser Station
-pStation = Station <$> many1 ((/=) ';')
+pStation = Station <$> many1 (/= ';')
 
 pCelsius :: Parser Celsius
 pCelsius = do
@@ -127,9 +127,9 @@ pCelsius = do
   intPart <- digitsP
   _ <- charP '.'
   fracPart <- digitsP
-  let numStr = maybe "" (const "-") sign ++ intPart ++ "." ++ fracPart
+  let !numStr = maybe "" (const "-") sign ++ intPart ++ "." ++ fracPart
   case readMaybe numStr of
-    Just floatValue -> return $ Celsius floatValue
+    Just !floatValue -> return $ Celsius floatValue
     Nothing -> empty
 
 pMeasurement :: Parser Measurement
