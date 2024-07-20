@@ -89,18 +89,12 @@ digitsP = many1 C.isDigit
 newtype Station = Station
   { unStation :: String
   }
-  deriving (Eq, Ord)
-
-instance Show Station where
-  show = (++) "Station " . unStation
+  deriving (Eq, Ord, Show)
 
 newtype Celsius = Celsius
   { unCelsius :: Float
   }
-  deriving (Eq, Num, Ord)
-
-instance Show Celsius where
-  show = (++) "Celsius " . show . unCelsius
+  deriving (Eq, Num, Ord, Show)
 
 instance Fractional Celsius where
   (/) :: Celsius -> Celsius -> Celsius
@@ -113,17 +107,7 @@ data Measurement = Measurement
   { mStation :: !Station,
     mCelsius :: !Celsius
   }
-  deriving (Eq, Ord)
-
-instance Show Measurement where
-  show m =
-    concat
-      [ "Measurement (",
-        show $ mStation m,
-        ") (",
-        show $ mCelsius m,
-        ")"
-      ]
+  deriving (Eq, Ord, Show)
 
 pStation :: Parser Station
 pStation = Station <$> many1 (/= ';')

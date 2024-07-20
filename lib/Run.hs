@@ -10,8 +10,9 @@ import RIO
 import RIO.List qualified as List
 import RIO.Map qualified as Map
 import RIO.PrettyPrint qualified as P
+import Text.Printf
 import Types
-import Prelude (putStrLn, readFile)
+import Prelude (putStrLn, readFile, writeFile)
 
 data Statistics = Statistics
   { cMin :: !Float,
@@ -20,8 +21,11 @@ data Statistics = Statistics
   }
   deriving (Eq)
 
-instance Show Statistics where
-  show c = List.intercalate "/" $ map show [cMin c, cMean c, cMax c]
+toString :: Statistics -> String
+toString stat = printf "%f/%f/%f" (cMin stat) (cMean stat) (cMax stat)
+
+roundTowardPositive :: (RealFrac a) => a -> Float
+roundTowardPositive x = fromIntegral ((ceiling $ x * 10) :: Integer) / 10.0 :: Float
 
 meanMaybe :: (Fractional a) => [a] -> Maybe a
 meanMaybe xs
@@ -31,35 +35,28 @@ meanMaybe xs
 calcStatistics :: [Celsius] -> Statistics
 calcStatistics cs =
   let min' :: [Celsius] -> Float
-      min' = maybe (0.0 :: Float) unCelsius . List.minimumMaybe
+      min' = roundTowardPositive . maybe (0.0 :: Float) unCelsius . List.minimumMaybe
 
       mean' :: [Celsius] -> Float
-      mean' = maybe (0.0 :: Float) unCelsius . meanMaybe
+      mean' = roundTowardPositive . maybe (0.0 :: Float) unCelsius . meanMaybe
 
       max' :: [Celsius] -> Float
-      max' = maybe (0.0 :: Float) unCelsius . List.maximumMaybe
+      max' = roundTowardPositive . maybe (0.0 :: Float) unCelsius . List.maximumMaybe
    in Statistics (min' cs) (mean' cs) (max' cs)
 
-writeToStdout :: Map Station [Celsius] -> IO ()
-writeToStdout ms = do
-  let cs = List.map (\(station, cs') -> (station, calcStatistics cs')) (Map.toList ms)
-      str =
-        List.foldl
-          ( \acc (station, stats) ->
-              concat
-                [ acc,
-                  (show $ unStation station),
-                  "=",
-                  show stats,
-                  ", "
-                ]
-          )
-          ""
-          cs
-   in putStrLn $ "{" ++ str ++ "}"
+buildFinalStr :: Map Station [Celsius] -> String
+buildFinalStr ms = do
+  let str =
+        List.intercalate ", "
+          $ List.map (\(Station station, temps) -> station <> "=" <> (toString $ calcStatistics temps))
+          $ Map.toList ms
+   in "{" <> str <> "}\n"
 
-writeToFile :: FilePath -> Map Station [Celsius] -> IO ()
-writeToFile _ _ = putStrLn "no implemented yet"
+writeToStdout :: String -> IO ()
+writeToStdout = putStrLn
+
+writeToFile :: FilePath -> String -> IO ()
+writeToFile filePath content = writeFile filePath content
 
 addMeasurement :: Measurement -> State (Map Station [Celsius]) ()
 addMeasurement m = modify $ Map.insertWith (++) (mStation m) (mCelsius m : [])
@@ -78,5 +75,5 @@ run = do
           <> P.bulletedList (take 10 $ map (fromString . show) parsed)
       )
   case aoOutputFilePath $ view appOptionsL env of
-    Nothing -> liftIO $ writeToStdout aggregated
-    Just outFilePath -> liftIO $ writeToFile outFilePath aggregated
+    Nothing -> liftIO $ writeToStdout $ buildFinalStr aggregated
+    Just outFilePath -> liftIO $ writeToFile outFilePath $ buildFinalStr aggregated
