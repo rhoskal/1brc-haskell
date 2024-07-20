@@ -62,6 +62,7 @@ common warnings
 
 common extensions
     default-extensions:
+        LambdaCase
         NoImplicitPrelude
         OverloadedStrings
 
