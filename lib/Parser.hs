@@ -97,10 +97,17 @@ instance Show Station where
 newtype Celsius = Celsius
   { unCelsius :: Float
   }
-  deriving (Eq, Ord)
+  deriving (Eq, Num, Ord)
 
 instance Show Celsius where
   show = (++) "Celsius " . show . unCelsius
+
+instance Fractional Celsius where
+  (/) :: Celsius -> Celsius -> Celsius
+  (Celsius c1) / (Celsius c2) = Celsius $ c1 / c2
+
+  fromRational :: Rational -> Celsius
+  fromRational = realToFrac
 
 data Measurement = Measurement
   { mStation :: !Station,
