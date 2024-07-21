@@ -34,8 +34,9 @@ targets:
 # -------------------
 
 .PHONY: build
-build: ## Make a production build
+build: ## Run GHC to produce executable
 	cabal build
+	cabal install --overwrite-policy=always
 
 .PHONY: build-watch
 build-watch: ## Watch files for changes and re-build
@@ -64,10 +65,6 @@ lint: ## Lint code
 .PHONY: repl
 repl: ## Run repl
 	cabal repl
-
-.PHONY: run
-run: ## Run project
-	cabal exec 1brc
 
 .PHONY: test
 test: ## Test code
