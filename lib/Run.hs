@@ -35,13 +35,13 @@ meanMaybe xs
 calcStatistics :: [Celsius] -> Statistics
 calcStatistics cs =
   let min' :: [Celsius] -> Float
-      min' = roundTowardPositive . maybe (0.0 :: Float) unCelsius . List.minimumMaybe
+      min' = maybe (0.0 :: Float) unCelsius . List.minimumMaybe
 
       mean' :: [Celsius] -> Float
       mean' = roundTowardPositive . maybe (0.0 :: Float) unCelsius . meanMaybe
 
       max' :: [Celsius] -> Float
-      max' = roundTowardPositive . maybe (0.0 :: Float) unCelsius . List.maximumMaybe
+      max' = maybe (0.0 :: Float) unCelsius . List.maximumMaybe
    in Statistics (min' cs) (mean' cs) (max' cs)
 
 buildFinalStr :: Map Station [Celsius] -> String
