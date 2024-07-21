@@ -29,7 +29,7 @@ Memory: 64 GB
 
 | Attempt Number | Approach | Execution Time | Diff | Commit |
 |----------------|----------|----------------|------|--------|
-|0| Naive Implementation: Read temperatures into a map of cities. Iterate serially over each key (city) in map to calculate min, max and mean temperatures.| 796.48 sec | ||
+|0| Naive Implementation: Read temperatures into a Map of cities. Iterate serially over each key (station name) in Map to calculate min, max and mean temperatures. Uses non-performant `String`.| 4714.17 sec | ||
 
 ## Development
 
@@ -43,6 +43,9 @@ make build # build and link executable
 
 1brc -f FILE -d # prints final out to stdout as well as debugging info
 1brc -f FILE > a.out # creates file with final output
+
+/usr/bin/time -h -p 1brc -f FILE >/dev/null
+hyperfine '1brc -f FILE >/dev/null'
 ```
 
 ## Resources
