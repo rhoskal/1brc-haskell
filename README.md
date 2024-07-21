@@ -29,7 +29,7 @@ Memory: 64 GB
 
 | Attempt Number | Approach | Execution Time | Diff | Commit |
 |----------------|----------|----------------|------|--------|
-|0| Naive Implementation: Read temperatures into a Map of cities. Iterate serially over each key (station name) in Map to calculate min, max and mean temperatures. Uses non-performant `String`.| 4714.17 sec | ||
+|0| Naive Implementation: Read temperatures into a Map of cities. Iterate serially over each key (station name) in Map to calculate min, max and mean temperatures. Uses non-performant `String`.| 4714.17 sec | |[a58c42d](https://github.com/rhoskal/1brc-haskell/commit/a58c42dcb0b2f414fdfbb1a503777dc42ade1fd2)|
 
 ## Development
 
@@ -54,4 +54,3 @@ hyperfine '1brc -f FILE >/dev/null'
 - [Data files](https://huggingface.co/datasets/nietras/1brc.data) => requires git lfs
 - [Golang post](https://www.bytesizego.com/blog/one-billion-row-challenge-go)
 - [Rust post](https://curiouscoding.nl/posts/1brc)
-
