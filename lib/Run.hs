@@ -40,14 +40,14 @@ calcStatistics cs =
         | otherwise = Just $ List.sum xs / (List.genericLength xs)
 
       roundTowardPositive :: (RealFrac a) => a -> Float
-      roundTowardPositive x = fromIntegral ((round $ x * 10) :: Integer) / 10.0 :: Float
+      roundTowardPositive n = fromIntegral ((round $ n * 10) :: Integer) / 10.0 :: Float
    in Statistics (min' cs) (mean' cs) (max' cs)
 
 buildFinalStr :: Map Station [Celsius] -> String
 buildFinalStr ms =
   let str =
         List.intercalate ", "
-          $ List.map (\(Station station, temps) -> station <> "=" <> (toString $ calcStatistics temps))
+          $ List.map (\(Station station, cs) -> station <> "=" <> (toString $ calcStatistics cs))
           $ Map.toList ms
    in "{" <> str <> "}"
 
@@ -60,11 +60,11 @@ run = do
   logDebug "Running v0 (naive)..."
   content <- liftIO $ readFile $ aoInputFilePath $ view appOptionsL env
   let parsed = catMaybes $ map parser $ lines content
-  let aggregated = execState (mapM_ addMeasurement parsed) Map.empty
   logDebug
     =<< P.displayWithColor
-      ( P.flow "First 10 measurements:"
+      ( P.flow "First 10 parsed measurements:"
           <> P.line
           <> P.bulletedList (take 10 $ map (fromString . show) parsed)
       )
-  liftIO $ putStrn $ buildFinalStr aggregated
+  let aggregated = execState (mapM_ addMeasurement parsed) Map.empty
+  liftIO $ putStrLn $ buildFinalStr aggregated
