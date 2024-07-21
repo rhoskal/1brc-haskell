@@ -48,7 +48,6 @@ programOptions =
   AppOptions
     <$> parseDebug
     <*> parseInputFilePath
-    <*> parseOutputFilePath
 
 parseDebug :: Parser Bool
 parseDebug =
@@ -64,12 +63,3 @@ parseInputFilePath =
     <> short 'f'
     <> metavar "FILE_PATH"
     <> help "Path to measurements file"
-
-parseOutputFilePath :: Parser (Maybe FilePath)
-parseOutputFilePath =
-  optional
-    $ strOption
-    $ long "output"
-    <> short 'o'
-    <> metavar "FILE_PATH"
-    <> help "Path to output calculations. Output will default to stdio if not provided."
