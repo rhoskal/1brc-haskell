@@ -15,22 +15,13 @@ import Types
 import Prelude (putStrLn, readFile, writeFile)
 
 data Statistics = Statistics
-  { cMin :: !Float,
-    cMean :: !Float,
-    cMax :: !Float
+  { sMin :: !Float,
+    sMean :: !Float,
+    sMax :: !Float
   }
-  deriving (Eq)
 
 toString :: Statistics -> String
-toString stat = printf "%f/%f/%f" (cMin stat) (cMean stat) (cMax stat)
-
-roundTowardPositive :: (RealFrac a) => a -> Float
-roundTowardPositive x = fromIntegral ((ceiling $ x * 10) :: Integer) / 10.0 :: Float
-
-meanMaybe :: (Fractional a) => [a] -> Maybe a
-meanMaybe xs
-  | null xs = Nothing
-  | otherwise = Just $ List.sum xs / (List.genericLength xs)
+toString stat = printf "%f/%f/%f" (sMin stat) (sMean stat) (sMax stat)
 
 calcStatistics :: [Celsius] -> Statistics
 calcStatistics cs =
@@ -42,10 +33,18 @@ calcStatistics cs =
 
       max' :: [Celsius] -> Float
       max' = maybe (0.0 :: Float) unCelsius . List.maximumMaybe
+
+      meanMaybe :: (Fractional a) => [a] -> Maybe a
+      meanMaybe xs
+        | null xs = Nothing
+        | otherwise = Just $ List.sum xs / (List.genericLength xs)
+
+      roundTowardPositive :: (RealFrac a) => a -> Float
+      roundTowardPositive x = fromIntegral ((round $ x * 10) :: Integer) / 10.0 :: Float
    in Statistics (min' cs) (mean' cs) (max' cs)
 
 buildFinalStr :: Map Station [Celsius] -> String
-buildFinalStr ms = do
+buildFinalStr ms =
   let str =
         List.intercalate ", "
           $ List.map (\(Station station, temps) -> station <> "=" <> (toString $ calcStatistics temps))
