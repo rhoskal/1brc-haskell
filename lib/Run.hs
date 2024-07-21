@@ -12,7 +12,7 @@ import RIO.Map qualified as Map
 import RIO.PrettyPrint qualified as P
 import Text.Printf
 import Types
-import Prelude (putStrLn, readFile, writeFile)
+import Prelude (putStrLn, readFile)
 
 data Statistics = Statistics
   { sMin :: !Float,
@@ -49,13 +49,7 @@ buildFinalStr ms =
         List.intercalate ", "
           $ List.map (\(Station station, temps) -> station <> "=" <> (toString $ calcStatistics temps))
           $ Map.toList ms
-   in "{" <> str <> "}\n"
-
-writeToStdout :: String -> IO ()
-writeToStdout = putStrLn
-
-writeToFile :: FilePath -> String -> IO ()
-writeToFile filePath content = writeFile filePath content
+   in "{" <> str <> "}"
 
 addMeasurement :: Measurement -> State (Map Station [Celsius]) ()
 addMeasurement m = modify $ Map.insertWith (++) (mStation m) (mCelsius m : [])
@@ -73,6 +67,4 @@ run = do
           <> P.line
           <> P.bulletedList (take 10 $ map (fromString . show) parsed)
       )
-  case aoOutputFilePath $ view appOptionsL env of
-    Nothing -> liftIO $ writeToStdout $ buildFinalStr aggregated
-    Just outFilePath -> liftIO $ writeToFile outFilePath $ buildFinalStr aggregated
+  liftIO $ putStrn $ buildFinalStr aggregated
