@@ -24,8 +24,8 @@ toString stat =
     <> T.singleton '/'
     <> (T.pack $ show $ sMax stat)
 
-roundTowardPositive :: (RealFrac a) => a -> Float
-roundTowardPositive n = fromIntegral ((ceiling $ n * 10) :: Integer) / 10.0
+roundTowardPositive :: (RealFrac a) => a -> a
+roundTowardPositive n = fromIntegral ((ceiling (n * 10) :: Integer)) / 10.0
 
 meanMaybe :: (Fractional a) => [a] -> Maybe a
 meanMaybe xs
