@@ -9,6 +9,8 @@ local file_names = {
     "measurements-dot.txt",
     "measurements-short.txt",
     "measurements-shortest.txt",
+    "measurements-10.txt",
+    "measurements-20.txt",
     "measurements-10000-unique-keys.txt",
     "measurements-100000.txt",
     "measurements-1000000.txt",
@@ -25,11 +27,13 @@ local checksums = {
     [6] = "e25655bd5c7c12b11204f71f4c5c734dd0261c34",  -- measurements-dot.txt
     [7] = "209f51a7821315bb22f14f31ce3f41432a115c84",  -- measurements-short.txt
     [8] = "3a90bce85485a77b2fb9758e846dc64d07455d1e",  -- measurements-shortest.txt
-    [9] = "bf149bba3f79419901a15099de32c224c6e91022",  -- measurements-1000-unique-keys.txt
-    [10] = "df2d9b0fbf6f3d22e3be1ac0cbce29759bc9eed3", -- measurements-100000.txt
-    [11] = "caec6a5e7d863946dde2c710ad69a71f37d1d951", -- measurements-1000000.txt
-    [12] = "27f4b0a5007d58f47e8cef0e242449578ba1987e", -- measurements-10000000.txt
-    [13] = "da6b764b0a8121ea5276bd3557cb7cf604bf301d"  -- measurements-1000000000.txt
+    [9] = "7e5dee8c7c7bf3fb130732e6ea1181366d727b5f",  -- measurements-10.txt
+    [10] = "c2d5fc20e3240479471af7a61048d332bd943d96", -- measurements-20.txt
+    [11] = "bf149bba3f79419901a15099de32c224c6e91022", -- measurements-1000-unique-keys.txt
+    [12] = "df2d9b0fbf6f3d22e3be1ac0cbce29759bc9eed3", -- measurements-100000.txt
+    [13] = "caec6a5e7d863946dde2c710ad69a71f37d1d951", -- measurements-1000000.txt
+    [14] = "27f4b0a5007d58f47e8cef0e242449578ba1987e", -- measurements-10000000.txt
+    [15] = "da6b764b0a8121ea5276bd3557cb7cf604bf301d"  -- measurements-1000000000.txt
 }
 
 local dir = arg[1]
@@ -92,7 +96,7 @@ for idx, file_name in ipairs(file_names) do
         local expected_hash = checksums[idx]
 
         if calculated_hash ~= expected_hash then
-            print("")
+            print("💥")
             print("Expected: " .. expected_hash)
             print("Received: " .. calculated_hash)
             os.exit(1)
