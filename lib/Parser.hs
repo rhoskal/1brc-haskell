@@ -108,10 +108,10 @@ pCelsius = do
   _ <- charP '.'
   fracPart <- digitsP
   let sign :: Text
-      sign = maybe T.empty (const $ T.pack "-") maybeSign
+      !sign = maybe T.empty (const $ T.singleton '-') maybeSign
 
       numStr :: Text
-      !numStr = sign <> intPart <> T.pack "." <> fracPart
+      !numStr = sign <> intPart <> T.singleton '.' <> fracPart
   case readMaybe (T.unpack numStr) of
     Just !floatValue -> return $ Celsius floatValue
     Nothing -> empty
