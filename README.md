@@ -46,6 +46,8 @@ make build # build and link executable
 
 /usr/bin/time -h -p 1brc -f FILE >/dev/null
 hyperfine '1brc -f FILE >/dev/null'
+
+lua verify.lua DIR
 ```
 
 ## Resources
