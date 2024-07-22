@@ -49,6 +49,10 @@ instance Monad Parser where
 
 -- Combinators
 
+-- sc :: Parser Text
+-- sc = Parser $ \input ->
+--   Just (T.dropWhile C.isSpace input, T.empty)
+
 charP :: Char -> Parser Char
 charP input = Parser fn
   where
