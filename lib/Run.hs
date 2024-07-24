@@ -37,7 +37,7 @@ parseFile = mapMaybe unsafeParse . T.lines
 run :: RIO App ()
 run = do
   env <- ask
-  logDebug "Running v3..."
+  logDebug "Running v4..."
   bsDataset <- BL.readFile $ aoInputFilePath $ view appOptionsL env
   let !textDataset = T.decodeUtf8With T.lenientDecode bsDataset
   let !observations = parseFile textDataset
