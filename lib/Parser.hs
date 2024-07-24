@@ -108,7 +108,7 @@ pCelsius = do
       !celsiusStr =
         T.concat
           [ maybe T.empty (const $ T.singleton '-') maybeSign,
-            intPart, -- !!!!!!!! This doesn't handle case when fracPart == 0??
+            intPart,
             fracPart
           ]
    in case readMaybe (T.unpack celsiusStr) :: Maybe Int16 of

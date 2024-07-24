@@ -6,7 +6,6 @@ module Summary
   )
 where
 
-import Data.Decimal
 import Parser (Celsius (..))
 import RIO
 import RIO.Text qualified as T
