@@ -62,6 +62,7 @@ common warnings
 
 common extensions
     default-extensions:
+        BangPatterns
         LambdaCase
         NoImplicitPrelude
         OverloadedStrings
@@ -98,6 +99,10 @@ library
     -- Base language which the package is written in.
     default-language: GHC2021
 
+    ghc-options:
+        -O2
+        -funbox-strict-fields
+
 executable 1brc
     -- Import common warning flags.
     import:
@@ -127,6 +132,10 @@ executable 1brc
 
     -- Base language which the package is written in.
     default-language: GHC2021
+
+    ghc-options:
+        -rtsopts
+        -O2
 
 test-suite 1brc-test
     -- Import common warning flags.

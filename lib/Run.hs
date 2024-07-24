@@ -8,6 +8,7 @@ import Control.Monad.State
 import Parser
 import RIO
 import RIO.ByteString qualified as B
+import RIO.ByteString qualified as BL
 import RIO.List qualified as List
 import RIO.Map qualified as Map
 import RIO.PrettyPrint qualified as P
@@ -18,23 +19,23 @@ import Types
 type Accumulator = Map Station Summary
 
 convertToStr :: Accumulator -> Text
-convertToStr ms = T.singleton '{' <> str <> T.singleton '}' <> T.singleton '\n'
+convertToStr !acc = T.singleton '{' <> str <> T.singleton '}' <> T.singleton '\n'
   where
     str :: Text
-    str =
+    !str =
       T.intercalate ", "
         $ List.map
-          ( \(Station station, summary) ->
+          ( \(Station !station, !summary) ->
               station
                 <> (T.singleton '=')
                 <> (formatSummary summary)
           )
-        $ Map.toList ms
+        $ Map.toList acc
 
 addObservation :: Observation -> State Accumulator ()
-addObservation m =
+addObservation !o =
   modify
-    $ Map.insertWith mergeSummary (oStation m) (mkInitialSummary $ oCelsius m)
+    $ Map.insertWith mergeSummary (oStation o) (mkInitialSummary $ oCelsius o)
 
 parseFile :: Text -> [Observation]
 parseFile = mapMaybe parser . T.lines
@@ -42,17 +43,17 @@ parseFile = mapMaybe parser . T.lines
 run :: RIO App ()
 run = do
   env <- ask
-  logDebug "Running v1..."
-  bsDataset <- B.readFile $ aoInputFilePath $ view appOptionsL env
-  let textDataset = T.decodeUtf8With T.lenientDecode bsDataset
-  let observations = parseFile textDataset
+  logDebug "Running v2..."
+  bsDataset <- BL.readFile $ aoInputFilePath $ view appOptionsL env
+  let !textDataset = T.decodeUtf8With T.lenientDecode bsDataset
+  let !observations = parseFile textDataset
   logDebug
     =<< P.displayWithColor
       ( P.flow "First 10 parsed observations:"
           <> P.line
           <> P.bulletedList (take 10 $ map (fromString . show) observations)
       )
-  let aggregated = execState (mapM_ addObservation observations) Map.empty
+  let !aggregated = execState (mapM_ addObservation observations) Map.empty
   logDebug
     =<< P.displayWithColor
       ( P.flow "First 10 aggegrated:"
