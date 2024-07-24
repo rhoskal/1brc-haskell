@@ -30,7 +30,7 @@ Memory: 64 GB
 | Attempt | Approach                                                                                                                                                                                                                               | Execution Time | Diff    | Commit                                                                                             |
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------- | -------------------------------------------------------------------------------------------------- |
 | 0       | Naïve Implementation: Read temperatures into a Map of cities. Iterate serially over each key (station name) in Map to and corresponding list of temperaturs to calculate min, max and mean temperatures. Uses non-performant `String`. | 4714.17 sec    |         | [a58c42d](https://github.com/rhoskal/1brc-haskell/commit/a58c42dcb0b2f414fdfbb1a503777dc42ade1fd2) |
-| 1       | Parser uses `Text` instead of `String`, read file as `ByteString` instead of `String`. Store temperatures as `IntX` instead of `Float`. Ignore rounding due to inconsistencies.                                                        | 1061.41 sec    | 126.49% |                                                                                                    |
+| 1       | Parser uses `Text` instead of `String`, read file as `ByteString` instead of `String`. Store temperatures as `IntX` instead of `Float`. Ignore rounding due to inconsistencies.                                                        | 1061.41 sec    | 126.49% | [1550352](https://github.com/rhoskal/1brc-haskell/commit/155035264f747254267488c4ea4ea13a7a670538) |
 
 ## Development
 
@@ -57,4 +57,3 @@ lua verify.lua DIR # verify against all test files
 - [Golang post](https://www.bytesizego.com/blog/one-billion-row-challenge-go)
 - [Rust post](https://curiouscoding.nl/posts/1brc)
 - [Haskell discourse](https://discourse.haskell.org/t/one-billion-row-challenge-in-hs/8946/217)
-
