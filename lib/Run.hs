@@ -21,7 +21,7 @@ strBuilder !acc =
           <> (T.singleton '=')
           <> (formatSummary summary)
    in T.singleton '{'
-        <> mconcat (List.intersperse (T.singleton ',') (map buildEntry $ Map.toList acc))
+        <> mconcat (List.intersperse (T.pack ", ") (map buildEntry $ Map.toList acc))
         <> T.singleton '}'
         <> T.singleton '\n'
 
@@ -32,7 +32,7 @@ addObservation !acc !o =
    in Map.insertWith mergeSummary station summary acc
 
 parseFile :: Text -> [Observation]
-parseFile = mapMaybe parser . T.lines
+parseFile = mapMaybe unsafeParse . T.lines
 
 run :: RIO App ()
 run = do

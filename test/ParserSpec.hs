@@ -4,7 +4,7 @@ import Parser
   ( Celsius (..),
     Observation (..),
     Station (..),
-    parser,
+    unsafeParse,
   )
 import RIO
 import RIO.Text qualified as T
@@ -31,13 +31,15 @@ parserSpec = do
 
             input :: Text
             input = stationName <> T.singleton ';' <> celsiusText
-         in case parser input of
+         in case unsafeParse input of
               Just (Observation (Station s) (Celsius c)) ->
                 let maybeCelsius :: Maybe Int16
                     maybeCelsius = readMaybe $ T.unpack $ T.filter (/= '.') celsiusText
                  in s == stationName && (Just c) == maybeCelsius
               _ -> False
     it "Should correctly handle an invalid row" $ do
-      parser "Bogotá,12.0" `shouldBe` Nothing
-      parser ";12.0" `shouldBe` Nothing
-      parser "Tokyo;12" `shouldBe` Nothing
+      unsafeParse "Bogotá,12.0" `shouldBe` Nothing
+      unsafeParse "Bogotá;" `shouldBe` Nothing
+      (isJust $ unsafeParse ";12.0") `shouldBe` True -- false positive
+      (isJust $ unsafeParse "Tokyo;12") `shouldBe` True -- false positive
+      (isJust $ unsafeParse "Aukland;.2") `shouldBe` True -- false positive
