@@ -1,39 +1,40 @@
 #!/usr/bin/env lua
 
 local file_names = {
-    "measurements-1.txt",
-    "measurements-2.txt",
-    "measurements-3.txt",
     "measurements-boundaries.txt",
     "measurements-complex-utf8.txt",
     "measurements-dot.txt",
     "measurements-short.txt",
     "measurements-shortest.txt",
+    "measurements-1.txt",
     "measurements-10.txt",
-    "measurements-20.txt",
-    "measurements-10000-unique-keys.txt",
+    "measurements-100.txt",
+    "measurements-1000.txt",
+    "measurements-10000.txt",
     "measurements-100000.txt",
     "measurements-1000000.txt",
     "measurements-10000000.txt",
+    "measurements-100000000.txt",
     "measurements-1000000000.txt"
 }
 
 local checksums = {
-    [1] = "b9ed83dbb95c47286d03510dc30b9f4e1c6f046d",  -- measurements-1.txt
-    [2] = "74eaffb3336b503575d768bc5a08a818029eb833",  -- measurements-2.txt
-    [3] = "7b245e058f13f3f1a3e281fce2e351df694bbaec",  -- measurements-3.txt
-    [4] = "9566eec019eb757ac5a711dcc1c2488eed27c296",  -- measurements-boundaries.txt
-    [5] = "763658233b962178d350adfc6e194f4c22e25faa",  -- measurements-complex-utf8.txt
-    [6] = "e25655bd5c7c12b11204f71f4c5c734dd0261c34",  -- measurements-dot.txt
-    [7] = "209f51a7821315bb22f14f31ce3f41432a115c84",  -- measurements-short.txt
-    [8] = "3a90bce85485a77b2fb9758e846dc64d07455d1e",  -- measurements-shortest.txt
-    [9] = "7e5dee8c7c7bf3fb130732e6ea1181366d727b5f",  -- measurements-10.txt
-    [10] = "c2d5fc20e3240479471af7a61048d332bd943d96", -- measurements-20.txt
-    [11] = "bf149bba3f79419901a15099de32c224c6e91022", -- measurements-1000-unique-keys.txt
-    [12] = "df2d9b0fbf6f3d22e3be1ac0cbce29759bc9eed3", -- measurements-100000.txt
-    [13] = "caec6a5e7d863946dde2c710ad69a71f37d1d951", -- measurements-1000000.txt
-    [14] = "27f4b0a5007d58f47e8cef0e242449578ba1987e", -- measurements-10000000.txt
-    [15] = "da6b764b0a8121ea5276bd3557cb7cf604bf301d"  -- measurements-1000000000.txt
+    [1] = "9566eec019eb757ac5a711dcc1c2488eed27c296",  -- measurements-boundaries.out
+    [2] = "763658233b962178d350adfc6e194f4c22e25faa",  -- measurements-complex-utf8.out
+    [3] = "e25655bd5c7c12b11204f71f4c5c734dd0261c34",  -- measurements-dot.out
+    [4] = "209f51a7821315bb22f14f31ce3f41432a115c84",  -- measurements-short.out
+    [5] = "3a90bce85485a77b2fb9758e846dc64d07455d1e",  -- measurements-shortest.out
+    [6] = "1cee441d648c59b95387c925854607fdc293ffea",  -- measurements-1.out
+    [7] = "99cf6654daaeeab0aeb9c34935f408a1ba6d1734",  -- measurements-10.out
+    [8] = "3f8ac812e47ee6b153ab5e2fee1e2fcefd3521b2",  -- measurements-100.out
+    [9] = "af08d8e202ff8fa70605f93168016e5d2dd70550",  -- measurements-1000.out
+    [10] = "b7e371280f13e46a0dd32c519c1d113ad7ad95da", -- measurements-10000.out
+    [11] = "f682f944cc2113d87353d52f67399494c294c3dd", -- measurements-100000.out
+    [12] = "6d5fd0a864a2165450d26cc8949ee3c5ac934550", -- measurements-1000000.out
+    [13] = "c15afb6000715d76111c6c87f8fb9bd516f3b9d6", -- measurements-10000000.out
+    [14] = "6d4cf50c39fafd4068d71899839593761be2f796", -- measurements-100000000.out
+    [15] =
+    "92b9efa4eeab2ff9ecfb68fb4efdb341e36678bb"         -- measurements-1000000000.out
 }
 
 local dir = arg[1]
