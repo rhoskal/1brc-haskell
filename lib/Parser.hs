@@ -1,6 +1,6 @@
 module Parser
   ( Celsius (..),
-    Measurement (..),
+    Observation (..),
     Station (..),
     parser,
   )
@@ -86,19 +86,12 @@ digitsP = many1 C.isDigit
 newtype Station = Station {unStation :: Text}
   deriving (Eq, Ord, Show)
 
-newtype Celsius = Celsius {unCelsius :: Float}
-  deriving (Eq, Num, Ord, Show)
+newtype Celsius = Celsius {unCelsius :: Int16}
+  deriving (Eq, Ord, Show)
 
-instance Fractional Celsius where
-  (/) :: Celsius -> Celsius -> Celsius
-  (Celsius c1) / (Celsius c2) = Celsius $ c1 / c2
-
-  fromRational :: Rational -> Celsius
-  fromRational = realToFrac
-
-data Measurement = Measurement
-  { mStation :: !Station,
-    mCelsius :: !Celsius
+data Observation = Observation
+  { oStation :: !Station,
+    oCelsius :: !Celsius
   }
   deriving (Eq, Ord, Show)
 
@@ -109,19 +102,21 @@ pCelsius :: Parser Celsius
 pCelsius = do
   maybeSign <- optionalP $ charP '-'
   intPart <- digitsP
-  _ <- charP '.'
-  fracPart <- digitsP
-  let sign :: Text
-      !sign = maybe T.empty (const $ T.singleton '-') maybeSign
+  {- Skip... as if we multiplied by 10 since we know the format is: -?\d?\d.\d -}
+  fracPart <- (charP '.' *> digitsP)
+  let celsiusStr :: Text
+      !celsiusStr =
+        T.concat
+          [ maybe T.empty (const $ T.singleton '-') maybeSign,
+            intPart, -- !!!!!!!! This doesn't handle case when fracPart == 0??
+            fracPart
+          ]
+   in case readMaybe (T.unpack celsiusStr) :: Maybe Int16 of
+        Just !val -> return $ Celsius val
+        Nothing -> empty
 
-      numStr :: Text
-      !numStr = sign <> intPart <> T.singleton '.' <> fracPart
-  case readMaybe (T.unpack numStr) of
-    Just !floatValue -> return $ Celsius floatValue
-    Nothing -> empty
+pObservation :: Parser Observation
+pObservation = Observation <$> pStation <*> (charP ';' *> pCelsius)
 
-pMeasurement :: Parser Measurement
-pMeasurement = Measurement <$> pStation <*> (charP ';' *> pCelsius)
-
-parser :: Text -> Maybe Measurement
-parser input = snd <$> runParser pMeasurement input
+parser :: Text -> Maybe Observation
+parser input = snd <$> runParser pObservation input
