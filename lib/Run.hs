@@ -7,64 +7,56 @@ import Control.Monad.State
   )
 import Parser
 import RIO
+import RIO.ByteString qualified as B
 import RIO.List qualified as List
 import RIO.Map qualified as Map
 import RIO.PrettyPrint qualified as P
-import Text.Printf
+import RIO.Text qualified as T
+import Summary
 import Types
-import Prelude (putStrLn, readFile)
 
-data Statistics = Statistics
-  { sMin :: !Float,
-    sMean :: !Float,
-    sMax :: !Float
-  }
+type Accumulator = Map Station Summary
 
-toString :: Statistics -> String
-toString stat = printf "%f/%f/%f" (sMin stat) (sMean stat) (sMax stat)
+convertToStr :: Accumulator -> Text
+convertToStr ms = T.singleton '{' <> str <> T.singleton '}' <> T.singleton '\n'
+  where
+    str :: Text
+    str =
+      T.intercalate ", "
+        $ List.map
+          ( \(Station station, summary) ->
+              station
+                <> (T.singleton '=')
+                <> (formatSummary summary)
+          )
+        $ Map.toList ms
 
-calcStatistics :: [Celsius] -> Statistics
-calcStatistics cs =
-  let min' :: [Celsius] -> Float
-      min' = maybe (0.0 :: Float) unCelsius . List.minimumMaybe
+addObservation :: Observation -> State Accumulator ()
+addObservation m =
+  modify
+    $ Map.insertWith mergeSummary (oStation m) (mkInitialSummary $ oCelsius m)
 
-      mean' :: [Celsius] -> Float
-      mean' = roundTowardPositive . maybe (0.0 :: Float) unCelsius . meanMaybe
-
-      max' :: [Celsius] -> Float
-      max' = maybe (0.0 :: Float) unCelsius . List.maximumMaybe
-
-      meanMaybe :: (Fractional a) => [a] -> Maybe a
-      meanMaybe xs
-        | null xs = Nothing
-        | otherwise = Just $ List.sum xs / (List.genericLength xs)
-
-      roundTowardPositive :: (RealFrac a) => a -> Float
-      roundTowardPositive n = fromIntegral ((round $ n * 10) :: Integer) / 10.0 :: Float
-   in Statistics (min' cs) (mean' cs) (max' cs)
-
-buildFinalStr :: Map Station [Celsius] -> String
-buildFinalStr ms =
-  let str =
-        List.intercalate ", "
-          $ List.map (\(Station station, cs) -> station <> "=" <> (toString $ calcStatistics cs))
-          $ Map.toList ms
-   in "{" <> str <> "}"
-
-addMeasurement :: Measurement -> State (Map Station [Celsius]) ()
-addMeasurement m = modify $ Map.insertWith (++) (mStation m) (mCelsius m : [])
+parseFile :: Text -> [Observation]
+parseFile = mapMaybe parser . T.lines
 
 run :: RIO App ()
 run = do
   env <- ask
-  logDebug "Running v0 (naive)..."
-  content <- liftIO $ readFile $ aoInputFilePath $ view appOptionsL env
-  let parsed = catMaybes $ map parser $ lines content
+  logDebug "Running v1..."
+  bsDataset <- B.readFile $ aoInputFilePath $ view appOptionsL env
+  let textDataset = T.decodeUtf8With T.lenientDecode bsDataset
+  let observations = parseFile textDataset
   logDebug
     =<< P.displayWithColor
-      ( P.flow "First 10 parsed measurements:"
+      ( P.flow "First 10 parsed observations:"
           <> P.line
-          <> P.bulletedList (take 10 $ map (fromString . show) parsed)
+          <> P.bulletedList (take 10 $ map (fromString . show) observations)
       )
-  let aggregated = execState (mapM_ addMeasurement parsed) Map.empty
-  liftIO $ putStrLn $ buildFinalStr aggregated
+  let aggregated = execState (mapM_ addObservation observations) Map.empty
+  logDebug
+    =<< P.displayWithColor
+      ( P.flow "First 10 aggegrated:"
+          <> P.line
+          <> P.bulletedList (take 10 $ map (fromString . show) (Map.toList aggregated))
+      )
+  B.putStr $ T.encodeUtf8 $ convertToStr aggregated

@@ -11,6 +11,7 @@ let
     pkgs.ghc
     pkgs.ghcid
     pkgs.cabal-install
+    pkgs.lua
     pkgs.llvm
     pkgs.nixfmt
     pkgs.ormolu

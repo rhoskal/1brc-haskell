@@ -2,27 +2,40 @@ module ParserSpec (parserSpec) where
 
 import Parser
   ( Celsius (..),
-    Measurement (..),
+    Observation (..),
     Station (..),
     parser,
   )
 import RIO
-import RIO.Partial (read)
+import RIO.Text qualified as T
 import Test.Hspec
 import Test.QuickCheck
+
+genFracPart :: Gen Int
+genFracPart = choose (0, 9)
 
 parserSpec :: Spec
 parserSpec = do
   describe "parser" $ do
-    it "parses all possible Celsius values (neg & pos) correctly"
+    it "Should parse all possible Celsius values (neg & pos) correctly"
       $ property
-      $ \x y ->
-        let stationName = "TestStation"
-            celsiusStr = show (x :: Int) <> "." <> show (abs y :: Int)
-            input = stationName ++ ";" ++ celsiusStr
+      $ \(intPart :: Int) -> forAll genFracPart $ \fracPart ->
+        let stationName :: Text
+            stationName = "TestStation"
+
+            celsiusText :: Text
+            celsiusText =
+              (T.pack $ show intPart)
+                <> (T.singleton '.')
+                <> (T.pack $ show fracPart)
+
+            input :: Text
+            input = stationName <> T.singleton ';' <> celsiusText
          in case parser input of
-              Just (Measurement (Station s) (Celsius t)) ->
-                s == stationName && t == (read celsiusStr :: Float)
+              Just (Observation (Station s) (Celsius c)) ->
+                let maybeCelsius :: Maybe Int16
+                    maybeCelsius = readMaybe $ T.unpack $ T.filter (/= '.') celsiusText
+                 in s == stationName && (Just c) == maybeCelsius
               _ -> False
     it "Should correctly handle an invalid row" $ do
       parser "Bogotá,12.0" `shouldBe` Nothing

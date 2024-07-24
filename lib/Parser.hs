@@ -1,6 +1,6 @@
 module Parser
   ( Celsius (..),
-    Measurement (..),
+    Observation (..),
     Station (..),
     parser,
   )
@@ -9,10 +9,9 @@ where
 import Control.Applicative (empty)
 import RIO
 import RIO.Char qualified as C
+import RIO.Text qualified as T
 
-newtype Parser a = Parser
-  { runParser :: String -> Maybe (String, a)
-  }
+newtype Parser a = Parser {runParser :: Text -> Maybe (Text, a)}
 
 instance Functor Parser where
   fmap :: (a -> b) -> Parser a -> Parser b
@@ -50,21 +49,26 @@ instance Monad Parser where
 
 -- Combinators
 
+-- sc :: Parser Text
+-- sc = Parser $ \input ->
+--   Just (T.dropWhile C.isSpace input, T.empty)
+
 charP :: Char -> Parser Char
 charP input = Parser fn
   where
-    fn [] = Nothing
-    fn (y : ys)
-      | y == input = Just (ys, input)
-      | otherwise = Nothing
+    fn txt
+      | T.null txt = Nothing
+      | otherwise =
+          T.uncons txt
+            >>= \(y, ys) ->
+              if y == input
+                then Just (ys, input)
+                else Nothing
 
--- stringP :: String -> Parser String
--- stringP = sequenceA . map charP
-
-many1 :: (Char -> Bool) -> Parser String
+many1 :: (Char -> Bool) -> Parser Text
 many1 predicate = Parser $ \input ->
-  let (matched, rest) = span predicate input
-   in if null matched
+  let (matched, rest) = T.span predicate input
+   in if T.null matched
         then Nothing
         else Just (rest, matched)
 
@@ -74,38 +78,20 @@ optionalP (Parser p) = Parser $ \input ->
     Nothing -> Just (input, Nothing)
     Just (rest, matched) -> Just (rest, Just matched)
 
-digitsP :: Parser String
+digitsP :: Parser Text
 digitsP = many1 C.isDigit
-
--- eol :: Parser String
--- eol =
---   stringP "\n\r"
---     <|> stringP "\r\n"
---     <|> stringP "\n"
---     <|> stringP "\r"
 
 -- Parsers
 
-newtype Station = Station
-  { unStation :: String
-  }
+newtype Station = Station {unStation :: Text}
   deriving (Eq, Ord, Show)
 
-newtype Celsius = Celsius
-  { unCelsius :: Float
-  }
-  deriving (Eq, Num, Ord, Show)
+newtype Celsius = Celsius {unCelsius :: Int16}
+  deriving (Eq, Ord, Show)
 
-instance Fractional Celsius where
-  (/) :: Celsius -> Celsius -> Celsius
-  (Celsius c1) / (Celsius c2) = Celsius $ c1 / c2
-
-  fromRational :: Rational -> Celsius
-  fromRational = realToFrac
-
-data Measurement = Measurement
-  { mStation :: !Station,
-    mCelsius :: !Celsius
+data Observation = Observation
+  { oStation :: !Station,
+    oCelsius :: !Celsius
   }
   deriving (Eq, Ord, Show)
 
@@ -114,17 +100,23 @@ pStation = Station <$> many1 (/= ';')
 
 pCelsius :: Parser Celsius
 pCelsius = do
-  sign <- optionalP $ charP '-'
+  maybeSign <- optionalP $ charP '-'
   intPart <- digitsP
-  _ <- charP '.'
-  fracPart <- digitsP
-  let !numStr = maybe "" (const "-") sign ++ intPart ++ "." ++ fracPart
-  case readMaybe numStr of
-    Just !floatValue -> return $ Celsius floatValue
-    Nothing -> empty
+  {- Skip... as if we multiplied by 10 since we know the format is: -?\d?\d.\d -}
+  fracPart <- (charP '.' *> digitsP)
+  let celsiusStr :: Text
+      !celsiusStr =
+        T.concat
+          [ maybe T.empty (const $ T.singleton '-') maybeSign,
+            intPart,
+            fracPart
+          ]
+   in case readMaybe (T.unpack celsiusStr) :: Maybe Int16 of
+        Just !val -> return $ Celsius val
+        Nothing -> empty
 
-pMeasurement :: Parser Measurement
-pMeasurement = Measurement <$> pStation <*> (charP ';' *> pCelsius)
+pObservation :: Parser Observation
+pObservation = Observation <$> pStation <*> (charP ';' *> pCelsius)
 
-parser :: String -> Maybe Measurement
-parser input = snd <$> runParser pMeasurement input
+parser :: Text -> Maybe Observation
+parser input = snd <$> runParser pObservation input

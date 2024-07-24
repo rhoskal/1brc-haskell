@@ -27,9 +27,10 @@ Memory: 64 GB
 
 ## Attempts
 
-| Attempt Number | Approach | Execution Time | Diff | Commit |
-|----------------|----------|----------------|------|--------|
-|0| Naive Implementation: Read temperatures into a Map of cities. Iterate serially over each key (station name) in Map to calculate min, max and mean temperatures. Uses non-performant `String`.| 4714.17 sec | |[a58c42d](https://github.com/rhoskal/1brc-haskell/commit/a58c42dcb0b2f414fdfbb1a503777dc42ade1fd2)|
+| Attempt | Approach                                                                                                                                                                                                                               | Execution Time | Diff    | Commit                                                                                             |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------- | -------------------------------------------------------------------------------------------------- |
+| 0       | Naïve Implementation: Read temperatures into a Map of cities. Iterate serially over each key (station name) in Map to and corresponding list of temperaturs to calculate min, max and mean temperatures. Uses non-performant `String`. | 4714.17 sec    |         | [a58c42d](https://github.com/rhoskal/1brc-haskell/commit/a58c42dcb0b2f414fdfbb1a503777dc42ade1fd2) |
+| 1       | Parser uses `Text` instead of `String`, read file as `ByteString` instead of `String`. Store temperatures as `IntX` instead of `Float`. Ignore rounding due to inconsistencies.                                                        | 1061.41 sec    | 126.49% |                                                                                                    |
 
 ## Development
 
@@ -46,11 +47,14 @@ make build # build and link executable
 
 /usr/bin/time -h -p 1brc -f FILE >/dev/null
 hyperfine '1brc -f FILE >/dev/null'
+
+lua verify.lua DIR # verify against all test files
 ```
 
 ## Resources
 
 - [Original post](https://www.morling.dev/blog/one-billion-row-challenge)
-- [Data files](https://huggingface.co/datasets/nietras/1brc.data) => requires git lfs
 - [Golang post](https://www.bytesizego.com/blog/one-billion-row-challenge-go)
 - [Rust post](https://curiouscoding.nl/posts/1brc)
+- [Haskell discourse](https://discourse.haskell.org/t/one-billion-row-challenge-in-hs/8946/217)
+
