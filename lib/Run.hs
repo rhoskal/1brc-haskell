@@ -1,10 +1,5 @@
 module Run (run) where
 
-import Control.Monad.State
-  ( State,
-    execState,
-    modify,
-  )
 import Parser
 import RIO
 import RIO.ByteString qualified as B
@@ -18,24 +13,23 @@ import Types
 
 type Accumulator = Map Station Summary
 
-convertToStr :: Accumulator -> Text
-convertToStr !acc = T.singleton '{' <> str <> T.singleton '}' <> T.singleton '\n'
-  where
-    str :: Text
-    !str =
-      T.intercalate ", "
-        $ List.map
-          ( \(Station !station, !summary) ->
-              station
-                <> (T.singleton '=')
-                <> (formatSummary summary)
-          )
-        $ Map.toList acc
+strBuilder :: Accumulator -> Text
+strBuilder !acc =
+  let buildEntry :: (Station, Summary) -> Text
+      buildEntry (Station !station, !summary) =
+        station
+          <> (T.singleton '=')
+          <> (formatSummary summary)
+   in T.singleton '{'
+        <> mconcat (List.intersperse (T.singleton ',') (map buildEntry $ Map.toList acc))
+        <> T.singleton '}'
+        <> T.singleton '\n'
 
-addObservation :: Observation -> State Accumulator ()
-addObservation !o =
-  modify
-    $ Map.insertWith mergeSummary (oStation o) (mkInitialSummary $ oCelsius o)
+addObservation :: Accumulator -> Observation -> Accumulator
+addObservation !acc !o =
+  let !station = oStation o
+      !summary = mkInitialSummary $ oCelsius o
+   in Map.insertWith mergeSummary station summary acc
 
 parseFile :: Text -> [Observation]
 parseFile = mapMaybe parser . T.lines
@@ -43,21 +37,21 @@ parseFile = mapMaybe parser . T.lines
 run :: RIO App ()
 run = do
   env <- ask
-  logDebug "Running v2..."
+  logDebug "Running v3..."
   bsDataset <- BL.readFile $ aoInputFilePath $ view appOptionsL env
   let !textDataset = T.decodeUtf8With T.lenientDecode bsDataset
   let !observations = parseFile textDataset
+  let !aggregated = List.foldl' addObservation Map.empty observations
   logDebug
     =<< P.displayWithColor
       ( P.flow "First 10 parsed observations:"
           <> P.line
           <> P.bulletedList (take 10 $ map (fromString . show) observations)
       )
-  let !aggregated = execState (mapM_ addObservation observations) Map.empty
   logDebug
     =<< P.displayWithColor
       ( P.flow "First 10 aggegrated:"
           <> P.line
-          <> P.bulletedList (take 10 $ map (fromString . show) (Map.toList aggregated))
+          <> P.bulletedList (take 10 $ map (fromString . show) $ Map.toList aggregated)
       )
-  B.putStr $ T.encodeUtf8 $ convertToStr aggregated
+  B.putStr $ T.encodeUtf8 $ strBuilder aggregated
