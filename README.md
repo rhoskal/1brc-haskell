@@ -60,6 +60,16 @@ lua verify.lua DIR # verify against all test files
 1brc +RTS -s -RTS -f FILE >/dev/null
 ```
 
+[Alexis King](https://www.youtube.com/watch?v=yRVjR9XcuPU&ab_channel=Tweag) suggests using the following flags to help understand GHC core:
+
+```
+-ddump-to-file
+-ddump-simpl
+-dsuppress-coercions
+-dsuppress-module-prefixes
+-dsuppress-type-applications
+```
+
 ## Benchmarking
 
 ```sh
