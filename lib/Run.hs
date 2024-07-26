@@ -18,8 +18,8 @@ strBuilder !acc =
   let buildEntry :: (Station, Summary) -> Text
       buildEntry (Station !station, !summary) =
         station
-          <> (T.singleton '=')
-          <> (formatSummary summary)
+          <> T.singleton '='
+          <> formatSummary summary
    in T.singleton '{'
         <> mconcat (List.intersperse (T.pack ", ") (map buildEntry $ Map.toList acc))
         <> T.singleton '}'
