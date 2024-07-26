@@ -100,7 +100,6 @@ library
 
     ghc-options:
         -O2
-        -funbox-strict-fields
 
 executable 1brc
     -- Import common warning flags.
