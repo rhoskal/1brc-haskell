@@ -50,9 +50,13 @@ clean: ## Remove artificats
 # Development targets
 # -------------------
 
-.PHONE: dev
+.PHONY: dev
 dev: ## Run ghcid
 	ghcid -c="cabal repl"
+
+.PHONY: benchmark
+benchmark: ## Run benchmarks
+	cabal run exe:bench
 
 .PHONY: format
 format: ## Format code

@@ -25,9 +25,9 @@ parserSpec = do
 
             celsiusText :: Text
             celsiusText =
-              (T.pack $ show intPart)
-                <> (T.singleton '.')
-                <> (T.pack $ show fracPart)
+              T.pack (show intPart)
+                <> T.singleton '.'
+                <> T.pack (show fracPart)
 
             input :: Text
             input = stationName <> T.singleton ';' <> celsiusText
@@ -35,11 +35,11 @@ parserSpec = do
               Just (Observation (Station s) (Celsius c)) ->
                 let maybeCelsius :: Maybe Int16
                     maybeCelsius = readMaybe $ T.unpack $ T.filter (/= '.') celsiusText
-                 in s == stationName && (Just c) == maybeCelsius
+                 in s == stationName && Just c == maybeCelsius
               _ -> False
     it "Should correctly handle an invalid row" $ do
       unsafeParse "Bogotá,12.0" `shouldBe` Nothing
       unsafeParse "Bogotá;" `shouldBe` Nothing
-      (isJust $ unsafeParse ";12.0") `shouldBe` True -- false positive
-      (isJust $ unsafeParse "Tokyo;12") `shouldBe` True -- false positive
-      (isJust $ unsafeParse "Aukland;.2") `shouldBe` True -- false positive
+      isJust (unsafeParse ";12.0") `shouldBe` True -- false positive
+      isJust (unsafeParse "Tokyo;12") `shouldBe` True -- false positive
+      isJust (unsafeParse "Aukland;.2") `shouldBe` True -- false positive

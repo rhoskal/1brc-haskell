@@ -26,8 +26,8 @@ mergeSummary :: Summary -> Summary -> Summary
 mergeSummary !s1 !s2 =
   let !sMin' = min (sMin s1) (sMin s2)
       !sMax' = max (sMax s1) (sMax s2)
-      !sTotal' = (sTotal s1) + (sTotal s2)
-      !sCount' = (sCount s1) + (sCount s2)
+      !sTotal' = sTotal s1 + sTotal s2
+      !sCount' = sCount s1 + sCount s2
    in Summary sMin' sMax' sTotal' sCount'
 
 formatSummary :: Summary -> Text
@@ -39,5 +39,5 @@ formatSummary !summary =
       !sMax' = fromIntegral (sMax summary) / 10.0
 
       sMean' :: Double
-      !sMean' = ((fromIntegral $ sTotal summary) / (fromIntegral $ sCount summary)) / 10.0
+      !sMean' = (fromIntegral (sTotal summary) / fromIntegral (sCount summary)) / 10.0
    in T.pack $ printf "%.1f/%.1f/%.1f" sMin' sMean' sMax'

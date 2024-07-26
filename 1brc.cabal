@@ -100,7 +100,6 @@ library
 
     ghc-options:
         -O2
-        -funbox-strict-fields
 
 executable 1brc
     -- Import common warning flags.
@@ -128,6 +127,38 @@ executable 1brc
 
     -- Directories containing source files.
     hs-source-dirs:   app
+
+    -- Base language which the package is written in.
+    default-language: GHC2021
+
+    ghc-options:
+        -rtsopts
+        -O2
+
+executable bench
+    -- Import common warning flags.
+    import:
+        warnings,
+        extensions
+
+    -- .hs or .lhs file containing the Main module.
+    main-is:          Bench.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+
+    -- Other library packages from which modules are imported.
+    build-depends:
+        base ^>=4.18.2.1,
+        1brc,
+        criterion,
+        rio
+
+    -- Directories containing source files.
+    hs-source-dirs:   benchmarks
 
     -- Base language which the package is written in.
     default-language: GHC2021

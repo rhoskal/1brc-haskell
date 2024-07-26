@@ -32,5 +32,5 @@ unsafeParse !line =
     [!station, !celsiusStr] ->
       fmap
         (\(!val) -> Observation (Station station) (Celsius val))
-        (readMaybe (T.unpack $ T.filter (/= '.') $ celsiusStr) :: Maybe Int16)
+        (readMaybe (T.unpack $ T.filter (/= '.') celsiusStr) :: Maybe Int16)
     _ -> Nothing
