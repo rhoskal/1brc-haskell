@@ -70,15 +70,12 @@ for idx, file_name in ipairs(file_names) do
 
     print("Processing file: " .. file)
 
-    -- Check if the file exists
     local file_handle = io.open(file, "r")
     if file_handle then
         file_handle:close()
 
-        -- Execute the command
         os.execute("1brc -f '" .. file .. "' > a.out")
 
-        -- Compute the SHA-1 hash of the output file
         local hash_handle = io.popen("shasum a.out")
         if not hash_handle then
             print("Error: Failed to open hash computation handle.")
