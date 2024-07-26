@@ -60,6 +60,13 @@ lua verify.lua DIR # verify against all test files
 1brc +RTS -s -RTS -f FILE >/dev/null
 ```
 
+## Benchmarking
+
+```sh
+cabal run exe:bench
+cabal run exe:bench -- --match "prefix" "Group name"
+```
+
 ## Resources
 
 - [Original post](https://www.morling.dev/blog/one-billion-row-challenge)

@@ -34,6 +34,9 @@ addObservation !acc !o =
 parseFile :: Text -> [Observation]
 parseFile = mapMaybe unsafeParse . T.lines
 
+printResults :: Accumulator -> IO ()
+printResults = B.putStr . T.encodeUtf8 . strBuilder
+
 run :: RIO App ()
 run = do
   env <- ask
@@ -55,4 +58,4 @@ run = do
           <> PP.line
           <> PP.bulletedList (take 10 $ map (fromString . show) $ Map.toList aggregated)
       )
-  B.putStr $ T.encodeUtf8 $ strBuilder aggregated
+  liftIO $ printResults aggregated
