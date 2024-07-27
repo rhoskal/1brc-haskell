@@ -3,27 +3,25 @@ module Run (run) where
 import Parser
 import RIO
 import RIO.ByteString qualified as B
-import RIO.ByteString qualified as BL
-import RIO.List qualified as List
+import RIO.List (intersperse)
 import RIO.Map qualified as Map
 import RIO.PrettyPrint qualified as PP
-import RIO.Text qualified as T
 import Summary
 import Types
 
 type Accumulator = Map Station Summary
 
-strBuilder :: Accumulator -> Text
+strBuilder :: Accumulator -> ByteString
 strBuilder !acc =
-  let buildEntry :: (Station, Summary) -> Text
+  let buildEntry :: (Station, Summary) -> ByteString
       buildEntry (Station !station, !summary) =
         station
-          <> T.singleton '='
+          <> B.singleton 61 -- c2w '=' == 61
           <> formatSummary summary
-   in T.singleton '{'
-        <> mconcat (List.intersperse (T.pack ", ") (map buildEntry $ Map.toList acc))
-        <> T.singleton '}'
-        <> T.singleton '\n'
+   in B.singleton 123 -- c2w '{' == 123
+        <> mconcat (intersperse (B.pack [44, 32]) (map buildEntry $ Map.toList acc))
+        <> B.singleton 125 -- c2w '}' == 125
+        <> B.singleton 10 -- c2w '\n' == 10
 
 addObservation :: Accumulator -> Observation -> Accumulator
 addObservation !acc !o =
@@ -31,21 +29,25 @@ addObservation !acc !o =
       !summary = mkInitialSummary $ oCelsius o
    in Map.insertWith mergeSummary station summary acc
 
-parseFile :: Text -> [Observation]
-parseFile = mapMaybe unsafeParse . T.lines
-
 printResults :: Accumulator -> IO ()
-printResults = B.putStr . T.encodeUtf8 . strBuilder
+printResults !acc = B.putStr $ strBuilder acc
+
+lines' :: ByteString -> [ByteString]
+lines' !ps
+  | B.null ps = []
+  | otherwise = case search ps of
+      Nothing -> [ps]
+      Just !n -> B.take n ps : lines' (B.drop (n + 1) ps)
+  where
+    search = B.elemIndex 10 -- c2w '\n' == 10
 
 run :: RIO App ()
 run = do
   env <- ask
-  logDebug "Running v4..."
-  dataset <-
-    T.decodeUtf8With T.lenientDecode
-      <$> BL.readFile (aoInputFilePath $ view appOptionsL env)
-  let !observations = parseFile dataset
-  let !aggregated = List.foldl' addObservation Map.empty observations
+  logDebug "Running v5..."
+  contents <- B.readFile (aoInputFilePath $ view appOptionsL env)
+  let !observations = map unsafeParse $ lines' contents
+  let !processed = foldl' addObservation Map.empty observations
   logDebug
     =<< PP.displayWithColor
       ( PP.flow "First 10 parsed observations:"
@@ -54,8 +56,8 @@ run = do
       )
   logDebug
     =<< PP.displayWithColor
-      ( PP.flow "First 10 aggegrated:"
+      ( PP.flow "First 10 processed:"
           <> PP.line
-          <> PP.bulletedList (take 10 $ map (fromString . show) $ Map.toList aggregated)
+          <> PP.bulletedList (take 10 $ map (fromString . show) $ Map.toList processed)
       )
-  liftIO $ printResults aggregated
+  liftIO $ printResults processed

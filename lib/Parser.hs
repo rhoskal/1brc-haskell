@@ -7,9 +7,9 @@ module Parser
 where
 
 import RIO
-import RIO.Text qualified as T
+import RIO.ByteString qualified as B
 
-newtype Station = Station {unStation :: Text}
+newtype Station = Station {unStation :: ByteString}
   deriving (Eq, Ord, Show)
 
 newtype Celsius = Celsius {unCelsius :: Int16}
@@ -21,16 +21,34 @@ data Observation = Observation
   }
   deriving (Eq, Ord, Show)
 
-{- This will result in many false positives:
- - pass (bad) if the temperature has no fractional part e.g. a whole number
- - pass (bad) if the temperature has no integer part e.g. `.1`
- - pass (bad) if no station name is provided but there is still a ';'
--}
-unsafeParse :: Text -> Maybe Observation
-unsafeParse !line =
-  case T.split (== ';') line of
-    [!station, !celsiusStr] ->
-      fmap
-        (\(!val) -> Observation (Station station) (Celsius val))
-        (readMaybe (T.unpack $ T.filter (/= '.') celsiusStr) :: Maybe Int16)
-    _ -> Nothing
+pCelsius :: ByteString -> Int16
+pCelsius !input =
+  -- c2w '-' == 45
+  case B.index input 0 of
+    45 -> negate $ pCelsius (B.drop 1 input)
+    !c1 ->
+      -- c2w '.' == 46
+      case B.index input 1 of
+        46 ->
+          let !c2 = B.index input 2
+           in (d2i c1 * 10) + d2i c2
+        !c2 ->
+          let !c3 = B.index input 3
+           in (d2i c1 * 100) + (d2i c2 * 10) + d2i c3
+  where
+    -- c2w '0' == 48
+    d2i :: Word8 -> Int16
+    d2i !c = fromIntegral c - 48
+
+unsafeParse :: ByteString -> Observation
+unsafeParse !input =
+  -- c2w ';' == 59
+  case B.findIndex (== 59) input of
+    Nothing -> error $ "no ';' found in " <> show input
+    Just !n ->
+      let station :: Station
+          !station = Station $ B.take n input
+
+          celsius :: Celsius
+          !celsius = Celsius $ pCelsius $ B.drop (n + 1) input
+       in Observation station celsius
