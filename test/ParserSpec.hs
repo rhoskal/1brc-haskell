@@ -7,39 +7,45 @@ import Parser
     unsafeParse,
   )
 import RIO
-import RIO.Text qualified as T
+import RIO.ByteString qualified as B
 import Test.Hspec
 import Test.QuickCheck
 
-genFracPart :: Gen Int
-genFracPart = choose (0, 9)
+genCelsius :: Gen (ByteString, ByteString)
+genCelsius = do
+  intPart <- choose (-99, 99) :: Gen Int
+  fracPart <- choose (0, 9) :: Gen Int
+  let i = fromString $ show intPart
+      f = fromString $ show fracPart
+   in return (i, f)
 
 parserSpec :: Spec
 parserSpec = do
   describe "parser" $ do
-    it "Should parse all possible Celsius values (neg & pos) correctly"
+    it "Should parse all possible Celsius values (-99.9 to 99.9) correctly"
       $ property
-      $ \(intPart :: Int) -> forAll genFracPart $ \fracPart ->
-        let stationName :: Text
+      $ forAll genCelsius
+      $ \(intPart, fracPart) ->
+        let stationName :: ByteString
             stationName = "TestStation"
 
-            celsiusText :: Text
-            celsiusText =
-              T.pack (show intPart)
-                <> T.singleton '.'
-                <> T.pack (show fracPart)
+            celsiusBS :: ByteString
+            celsiusBS =
+              intPart
+                <> B.singleton 46 -- c2w '.' == 46
+                <> fracPart
 
-            input :: Text
-            input = stationName <> T.singleton ';' <> celsiusText
-         in case unsafeParse input of
-              Just (Observation (Station s) (Celsius c)) ->
-                let maybeCelsius :: Maybe Int16
-                    maybeCelsius = readMaybe $ T.unpack $ T.filter (/= '.') celsiusText
-                 in s == stationName && Just c == maybeCelsius
-              _ -> False
-    it "Should correctly handle an invalid row" $ do
-      unsafeParse "Bogotá,12.0" `shouldBe` Nothing
-      unsafeParse "Bogotá;" `shouldBe` Nothing
-      isJust (unsafeParse ";12.0") `shouldBe` True -- false positive
-      isJust (unsafeParse "Tokyo;12") `shouldBe` True -- false positive
-      isJust (unsafeParse "Aukland;.2") `shouldBe` True -- false positive
+            input :: ByteString
+            input =
+              stationName
+                <> B.singleton 59 -- c2w ';' == 59
+                <> celsiusBS
+
+            (Observation (Station s) (Celsius c)) = unsafeParse input
+         in (s == stationName) && fromString (show c) == B.filter (/= 46) celsiusBS
+
+    it "Should correctly handle edge cases" $ do
+      evaluate (unsafeParse "Buenos Aires,12.0") `shouldThrow` errorCall "no ';' found in \"Buenos Aires,12.0\""
+      evaluate (unsafeParse "Tokyo;12") `shouldThrow` anyErrorCall
+      evaluate (unsafeParse "Aukland;.2") `shouldThrow` anyErrorCall
+      unsafeParse ";12.0" `shouldBe` Observation (Station "") (Celsius 120)

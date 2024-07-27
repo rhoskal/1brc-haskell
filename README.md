@@ -34,6 +34,7 @@ Memory: 64 GB
 |    2    | Add strictness and compiler flags for small performance improvements. Read file content lazily.                                                                                                                                        | 969.98 sec     |   9.00% | [00ddd57](https://github.com/rhoskal/1brc-haskell/commit/00ddd571360f5cd60e90b9a55ab8bb7ed8914f25) |
 |    3    | Replace `State` monad with `List.foldl'`                                                                                                                                                                                               | 970.47 sec     |  -0.05% | [75211bb](https://github.com/rhoskal/1brc-haskell/commit/75211bbd93afc3ec32f1661aa2e3b5b500b184bf) |
 |    4    | Ditch fancy, custom monad `Parser` for a down 'n dirty parser all in the name of speed. 😢                                                                                                                                             | 875.62 sec     |  10.28% | [e2df7f6](https://github.com/rhoskal/1brc-haskell/commit/e2df7f6b23a8518689ede3d458a734cc6f0db080) |
+|    5    | Parser, formatter and printer all use `ByteString`.                                                                                                                                                                                    | 372.68 sec     |  80.58% |                                                                                                    |
 
 ## Development
 

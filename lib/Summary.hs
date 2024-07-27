@@ -8,7 +8,6 @@ where
 
 import Parser (Celsius (..))
 import RIO
-import RIO.Text qualified as T
 import Text.Printf
 
 data Summary = Summary
@@ -30,7 +29,7 @@ mergeSummary !s1 !s2 =
       !sCount' = sCount s1 + sCount s2
    in Summary sMin' sMax' sTotal' sCount'
 
-formatSummary :: Summary -> Text
+formatSummary :: Summary -> ByteString
 formatSummary !summary =
   let sMin' :: Double
       !sMin' = fromIntegral (sMin summary) / 10.0
@@ -40,4 +39,4 @@ formatSummary !summary =
 
       sMean' :: Double
       !sMean' = (fromIntegral (sTotal summary) / fromIntegral (sCount summary)) / 10.0
-   in T.pack $ printf "%.1f/%.1f/%.1f" sMin' sMean' sMax'
+   in fromString $ printf "%.1f/%.1f/%.1f" sMin' sMean' sMax'
