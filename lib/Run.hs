@@ -51,22 +51,23 @@ hUntilNewline !fileHandle = go B.empty
           then return acc
           else go $ B.append acc char
 
-readChunk :: Handle -> IO ByteString
-readChunk !fileHandle = do
-  initialChunk <- B.hGet fileHandle 67108864
+readChunk :: Handle -> ChunkSize -> IO ByteString
+readChunk !fileHandle (ChunkSize !chunkSize) = do
+  initialChunk <- B.hGet fileHandle chunkSize
   isEOF <- hIsEOF fileHandle
   if isEOF
     then return initialChunk
     else B.append initialChunk <$> hUntilNewline fileHandle
 
-parseFile :: FilePath -> IO Accumulator
-parseFile !filePath = withFile filePath ReadMode $ \(!fileHandle) -> do
+parseFile :: FilePath -> ChunkSize -> IO Accumulator
+parseFile !filePath !chunkSize = do
+  fileHandle <- openFile filePath ReadMode
   let processChunk !acc = do
         isEOF <- hIsEOF fileHandle
         if isEOF
           then return acc
           else do
-            chunk <- readChunk fileHandle
+            chunk <- readChunk fileHandle chunkSize
             let !observations = map unsafeParse $ lines' chunk
             let !newAcc = foldl' addObservation acc observations
             processChunk newAcc
@@ -76,7 +77,9 @@ run :: RIO App ()
 run = do
   env <- ask
   logDebug "Running v6..."
-  processed <- liftIO $ parseFile (aoInputFilePath $ view appOptionsL env)
+  let !filePath = aoInputFilePath $ view appOptionsL env
+  let !chunkSize = aoChunkSize $ view appOptionsL env
+  processed <- liftIO $ parseFile filePath chunkSize
   logDebug
     =<< PP.displayWithColor
       ( PP.flow "First 10 processed:"

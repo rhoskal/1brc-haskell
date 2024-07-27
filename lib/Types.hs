@@ -5,10 +5,14 @@ import RIO.PrettyPrint (HasStylesUpdate (..), HasTerm (..))
 import RIO.PrettyPrint.StylesUpdate (StylesUpdate (..))
 import RIO.Process
 
+newtype ChunkSize = ChunkSize {unChunkSize :: Int}
+  deriving (Show)
+
 -- | Command line arguments
 data AppOptions = AppOptions
   { aoDebug :: !Bool,
-    aoInputFilePath :: !FilePath
+    aoInputFilePath :: !FilePath,
+    aoChunkSize :: !ChunkSize
   }
   deriving (Show)
 
