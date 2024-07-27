@@ -37,23 +37,66 @@ Memory: 64 GB
 |    5    | Parser, formatter and printer all use `ByteString`.                                                                                                                                                                                    | 372.68 sec     |  80.58% | [35ac275](https://github.com/rhoskal/1brc-haskell/commit/35ac275d3895ec9700f5ee6040a2c5b47ea93dc8) |
 |    6    | Parse file in chunks.                                                                                                                                                                                                                  | 154.57 sec     |  82.73% |                                                                                                    |
 
-## Development
-
-> [!NOTE]
-> Setup requires Nix and `direnv`
-
-Useful commands during development:
+## Show & Tell
 
 ```sh
-make build # build and link executable
+λ 1brc --help
+1 Billion Row Challenge
 
-1brc -f FILE -d # prints final out to stdout as well as debugging info
-1brc -f FILE > a.out # creates file with final output
+Usage: 1brc [--version] [-d|--debug] (-f|--file FILE_PATH)
+            [-c|--csize CHUNK_SIZE]
 
-/usr/bin/time -h -p 1brc -f FILE >/dev/null
-hyperfine '1brc -f FILE >/dev/null'
+  Run the current aggregation implementation optimized for speed.
 
-lua verify.lua DIR # verify against all test files
+Available options:
+  -h,--help                Show this help text
+  --version                Show version
+  -d,--debug               Output information useful for debugging
+  -f,--file FILE_PATH      Path to measurements file
+  -c,--csize CHUNK_SIZE    Chunk size in bytes (default: 67108864)
+
+For more information, please visit https://1brc.dev
+```
+
+```sh
+λ 1brc -f ../data/measurements-10.txt -d
+2024-07-28 10:07:03.610839: [debug] Running v6...
+@(lib/Run.hs:78:3)
+2024-07-28 10:07:03.616891: [debug] First 10 processed:
+* (Station {unStation = "Alexandra"},Summary {sMin = 6, sMax = 6, sTotal = 6, sCount = 1})
+* (Station {unStation = "Benghazi"},Summary {sMin = 75, sMax = 75, sTotal = 75, sCount = 1})
+* (Station {unStation = "Blantyre"},Summary {sMin = 131, sMax = 131, sTotal = 131, sCount = 1})
+* (Station {unStation = "Bouak\195\169"},Summary {sMin = 163, sMax = 163, sTotal = 163, sCount = 1})
+* (Station {unStation = "Lyon"},Summary {sMin = 53, sMax = 53, sTotal = 53, sCount = 1})
+* (Station {unStation = "Napoli"},Summary {sMin = 213, sMax = 213, sTotal = 213, sCount = 1})
+* (Station {unStation = "Niamey"},Summary {sMin = 192, sMax = 192, sTotal = 192, sCount = 1})
+* (Station {unStation = "Port Vila"},Summary {sMin = 322, sMax = 322, sTotal = 322, sCount = 1})
+* (Station {unStation = "S\195\169gou"},Summary {sMin = 198, sMax = 198, sTotal = 198, sCount = 1})
+* (Station {unStation = "Vladivostok"},Summary {sMin = 155, sMax = 155, sTotal = 155, sCount = 1})
+@(lib/Run.hs:80:3)
+{Alexandra=0.6/0.6/0.6, Benghazi=7.5/7.5/7.5, Blantyre=13.1/13.1/13.1, Bouaké=16.3/16.3/16.3, Lyon=5.3/5.3/5.3, Napoli=21.3/21.3/21.3, Niamey=19.2/19.2/19.2, Port Vila=32.2/32.2/32.2, Ségou=19.8/19.8/19.8, Vladivostok=15.5/15.5/15.5}
+```
+
+```sh
+λ /usr/bin/time -h -p 1brc -f ../data/measurements-1000000000.txt >/dev/null
+real 156.82
+user 153.50
+sys 1.10
+```
+
+```sh
+λ lua verify.lua ../data
+Verifying checksums: ../data/measurements-boundaries.txt
+Verifying checksums: ../data/measurements-complex-utf8.txt
+Verifying checksums: ../data/measurements-dot.txt
+Verifying checksums: ../data/measurements-short.txt
+Verifying checksums: ../data/measurements-shortest.txt
+Verifying checksums: ../data/measurements-1.txt
+Verifying checksums: ../data/measurements-10.txt
+Verifying checksums: ../data/measurements-100.txt
+💥
+Expected: 3f8ac812e47ee6b153ab5e2fee1e2fcefd3521b2
+Received: f625ca2d72ed36a79e1302b4195c5f7774d86af6
 ```
 
 ## Profiling
