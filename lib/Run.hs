@@ -41,19 +41,42 @@ lines' !ps
   where
     search = B.elemIndex 10 -- c2w '\n' == 10
 
+hUntilNewline :: Handle -> IO ByteString
+hUntilNewline !fileHandle = go B.empty
+  where
+    go :: ByteString -> IO ByteString
+    go !acc =
+      B.hGet fileHandle 1 >>= \(!char) ->
+        if char == "\n"
+          then return acc
+          else go $ B.append acc char
+
+readChunk :: Handle -> IO ByteString
+readChunk !fileHandle = do
+  initialChunk <- B.hGet fileHandle 67108864
+  isEOF <- hIsEOF fileHandle
+  if isEOF
+    then return initialChunk
+    else B.append initialChunk <$> hUntilNewline fileHandle
+
+parseFile :: FilePath -> IO Accumulator
+parseFile !filePath = withFile filePath ReadMode $ \(!fileHandle) -> do
+  let processChunk !acc = do
+        isEOF <- hIsEOF fileHandle
+        if isEOF
+          then return acc
+          else do
+            chunk <- readChunk fileHandle
+            let !observations = map unsafeParse $ lines' chunk
+            let !newAcc = foldl' addObservation acc observations
+            processChunk newAcc
+  processChunk Map.empty
+
 run :: RIO App ()
 run = do
   env <- ask
-  logDebug "Running v5..."
-  contents <- B.readFile (aoInputFilePath $ view appOptionsL env)
-  let !observations = map unsafeParse $ lines' contents
-  let !processed = foldl' addObservation Map.empty observations
-  logDebug
-    =<< PP.displayWithColor
-      ( PP.flow "First 10 parsed observations:"
-          <> PP.line
-          <> PP.bulletedList (take 10 $ map (fromString . show) observations)
-      )
+  logDebug "Running v6..."
+  processed <- liftIO $ parseFile (aoInputFilePath $ view appOptionsL env)
   logDebug
     =<< PP.displayWithColor
       ( PP.flow "First 10 processed:"
