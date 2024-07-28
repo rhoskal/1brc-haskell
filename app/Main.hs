@@ -74,6 +74,6 @@ parseChunkSize =
           <> short 'c'
           <> metavar "CHUNK_SIZE"
           <> showDefault
-          <> value 67108864
+          <> value 64000000
           <> help "Chunk size in bytes"
       )

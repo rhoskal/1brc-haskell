@@ -53,7 +53,7 @@ Available options:
   --version                Show version
   -d,--debug               Output information useful for debugging
   -f,--file FILE_PATH      Path to measurements file
-  -c,--csize CHUNK_SIZE    Chunk size in bytes (default: 67108864)
+  -c,--csize CHUNK_SIZE    Chunk size in bytes (default: 64000000)
 
 For more information, please visit https://1brc.dev
 ```
