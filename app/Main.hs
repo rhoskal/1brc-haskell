@@ -48,6 +48,7 @@ programOptions =
   AppOptions
     <$> parseDebug
     <*> parseInputFilePath
+    <*> parseChunkSize
 
 parseDebug :: Parser Bool
 parseDebug =
@@ -63,3 +64,16 @@ parseInputFilePath =
     <> short 'f'
     <> metavar "FILE_PATH"
     <> help "Path to measurements file"
+
+parseChunkSize :: Parser ChunkSize
+parseChunkSize =
+  ChunkSize
+    <$> option
+      auto
+      ( long "csize"
+          <> short 'c'
+          <> metavar "CHUNK_SIZE"
+          <> showDefault
+          <> value 64000000
+          <> help "Chunk size in bytes"
+      )

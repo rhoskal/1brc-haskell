@@ -68,7 +68,7 @@ for idx, file_name in ipairs(file_names) do
     local file = dir .. "/" .. file_name
     local key = file_name:match("measurements%-(.+)%..+")
 
-    print("Processing file: " .. file)
+    print("Verifying checksums: " .. file)
 
     local file_handle = io.open(file, "r")
     if file_handle then
@@ -97,9 +97,12 @@ for idx, file_name in ipairs(file_names) do
             print("💥")
             print("Expected: " .. expected_hash)
             print("Received: " .. calculated_hash)
+            os.execute("rm a.out")
             os.exit(1)
         end
     else
         print("File " .. file .. " does not exist.")
     end
 end
+
+os.execute("rm a.out")
