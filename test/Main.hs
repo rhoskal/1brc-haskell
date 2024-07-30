@@ -4,6 +4,6 @@ import SummarySpec (summarySpec)
 import Test.Hspec
 
 main :: IO ()
-main = hspec $ do
+main = hspec $ parallel $ do
   describe "Parser" parserSpec
   describe "Rounding" summarySpec

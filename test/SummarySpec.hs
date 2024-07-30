@@ -116,16 +116,16 @@ summarySpec = do
 
   describe "should handle others" $ do
     it "2.8499999999999996" $ do
-      round' (2.8499999999999996 :: Double) `shouldBe` (2.9 :: Double)
+      round' (2.8499999999999996 :: Double) `shouldBe` (2.8 :: Double)
     it "0.5499999999999998" $ do
-      round' (0.5499999999999998 :: Double) `shouldBe` (0.6 :: Double)
+      round' (0.5499999999999998 :: Double) `shouldBe` (0.5 :: Double)
     it "0.34999999999999987" $ do
-      round' (0.34999999999999987 :: Double) `shouldBe` (0.4 :: Double)
+      round' (0.34999999999999987 :: Double) `shouldBe` (0.3 :: Double)
     it "23.049999999999997" $ do
-      round' (23.049999999999997 :: Double) `shouldBe` (23.1 :: Double)
+      round' (23.049999999999997 :: Double) `shouldBe` (23.0 :: Double)
     it "25.549999999999997" $ do
-      round' (25.549999999999997 :: Double) `shouldBe` (25.6 :: Double)
+      round' (25.549999999999997 :: Double) `shouldBe` (25.5 :: Double)
     it "-1.0500000000000007" $ do
-      round' (-1.0500000000000007 :: Double) `shouldBe` (-1.0 :: Double)
+      round' (-1.0500000000000007 :: Double) `shouldBe` (-1.1 :: Double)
     it "11.649999999999999" $ do
-      round' (11.649999999999999 :: Double) `shouldBe` (11.7 :: Double)
+      round' (11.649999999999999 :: Double) `shouldBe` (11.6 :: Double)

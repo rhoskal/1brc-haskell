@@ -26,29 +26,23 @@ mergeSummary !s1 !s2 =
 -- | Mimic Java's `Math.round()`
 round' :: Double -> Double
 round' n =
-  let scaled :: Double
-      scaled = n * 10.0
+  let (intPart, fracPart) = properFraction (n * 10) :: (Int, Double)
 
-      r :: Double
-      r = fromIntegral (round scaled :: Int)
-
-      rounded :: Double
+      rounded :: Int
       rounded
-        | abs (r - scaled) == 0.5 =
-            if n < 0.0
-              then signum n * fromIntegral (floor (abs scaled) :: Int)
-              else signum n * fromIntegral (ceiling (abs scaled) :: Int)
-        | otherwise = fromIntegral (round scaled :: Int)
-   in rounded / 10.0
+        | fracPart == -0.5 = intPart
+        | fracPart == 0.5 = intPart + 1
+        | fracPart > 0 = if fracPart < 0.5 then intPart else intPart + 1
+        | fracPart < 0 = if fracPart > -0.5 then intPart else intPart - 1
+        | otherwise = intPart
+   in fromIntegral rounded / 10.0
 
 formatSummary :: Summary -> ByteString
 formatSummary (Summary !sMin' !sMax' !sTotal' !sCount') =
   B.concat
     [ fromString $ show $ round' sMin',
       "/",
-      fromString $ show $ (sTotal' / fromIntegral sCount'),
+      fromString $ show $ round' (sTotal' / fromIntegral sCount'),
       "/",
       fromString $ show $ round' sMax'
     ]
-
-
