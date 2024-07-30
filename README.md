@@ -36,6 +36,7 @@ Memory: 64 GB
 |    4    | Ditch fancy, custom monad `Parser` for a down 'n dirty parser all in the name of speed. 😢                                                                                                                                             | 875.62 sec     |  10.28% | [e2df7f6](https://github.com/rhoskal/1brc-haskell/commit/e2df7f6b23a8518689ede3d458a734cc6f0db080) |
 |    5    | Parser, formatter and printer all use `ByteString`.                                                                                                                                                                                    | 372.68 sec     |  80.58% | [35ac275](https://github.com/rhoskal/1brc-haskell/commit/35ac275d3895ec9700f5ee6040a2c5b47ea93dc8) |
 |    6    | Parse file in chunks.                                                                                                                                                                                                                  | 154.57 sec     |  82.73% | [35860b1](https://github.com/rhoskal/1brc-haskell/commit/35860b10b4603e1f9e688c983fc4fd768b0a1fd6) |
+|    7    | Proper floating point rounding.                                                                                                                                                                                                        | 155.14 sec     |   0.36% |                                                                                                    |
 
 ## Show & Tell
 
@@ -60,20 +61,20 @@ For more information, please visit https://1brc.dev
 
 ```sh
 λ 1brc -f ../data/measurements-10.txt -d
-2024-07-28 10:07:03.610839: [debug] Running v6...
-@(lib/Run.hs:78:3)
-2024-07-28 10:07:03.616891: [debug] First 10 processed:
-* (Station {unStation = "Alexandra"},Summary {sMin = 6, sMax = 6, sTotal = 6, sCount = 1})
-* (Station {unStation = "Benghazi"},Summary {sMin = 75, sMax = 75, sTotal = 75, sCount = 1})
-* (Station {unStation = "Blantyre"},Summary {sMin = 131, sMax = 131, sTotal = 131, sCount = 1})
-* (Station {unStation = "Bouak\195\169"},Summary {sMin = 163, sMax = 163, sTotal = 163, sCount = 1})
-* (Station {unStation = "Lyon"},Summary {sMin = 53, sMax = 53, sTotal = 53, sCount = 1})
-* (Station {unStation = "Napoli"},Summary {sMin = 213, sMax = 213, sTotal = 213, sCount = 1})
-* (Station {unStation = "Niamey"},Summary {sMin = 192, sMax = 192, sTotal = 192, sCount = 1})
-* (Station {unStation = "Port Vila"},Summary {sMin = 322, sMax = 322, sTotal = 322, sCount = 1})
-* (Station {unStation = "S\195\169gou"},Summary {sMin = 198, sMax = 198, sTotal = 198, sCount = 1})
-* (Station {unStation = "Vladivostok"},Summary {sMin = 155, sMax = 155, sTotal = 155, sCount = 1})
-@(lib/Run.hs:80:3)
+2024-07-30 19:58:03.149119: [debug] Running v7...
+@(lib/Run.hs:79:3)
+2024-07-30 19:58:03.156886: [debug] First 10 processed:
+* (Station {unStation = "Alexandra"},Summary {sMin = 0.6, sMax = 0.6, sTotal = 0.6, sCount = 1})
+* (Station {unStation = "Benghazi"},Summary {sMin = 7.5, sMax = 7.5, sTotal = 7.5, sCount = 1})
+* (Station {unStation = "Blantyre"},Summary {sMin = 13.1, sMax = 13.1, sTotal = 13.1, sCount = 1})
+* (Station {unStation = "Bouak\195\169"},Summary {sMin = 16.3, sMax = 16.3, sTotal = 16.3, sCount = 1})
+* (Station {unStation = "Lyon"},Summary {sMin = 5.3, sMax = 5.3, sTotal = 5.3, sCount = 1})
+* (Station {unStation = "Napoli"},Summary {sMin = 21.3, sMax = 21.3, sTotal = 21.3, sCount = 1})
+* (Station {unStation = "Niamey"},Summary {sMin = 19.2, sMax = 19.2, sTotal = 19.2, sCount = 1})
+* (Station {unStation = "Port Vila"},Summary {sMin = 32.2, sMax = 32.2, sTotal = 32.2, sCount = 1})
+* (Station {unStation = "S\195\169gou"},Summary {sMin = 19.8, sMax = 19.8, sTotal = 19.8, sCount = 1})
+* (Station {unStation = "Vladivostok"},Summary {sMin = 15.5, sMax = 15.5, sTotal = 15.5, sCount = 1})
+@(lib/Run.hs:83:3)
 {Alexandra=0.6/0.6/0.6, Benghazi=7.5/7.5/7.5, Blantyre=13.1/13.1/13.1, Bouaké=16.3/16.3/16.3, Lyon=5.3/5.3/5.3, Napoli=21.3/21.3/21.3, Niamey=19.2/19.2/19.2, Port Vila=32.2/32.2/32.2, Ségou=19.8/19.8/19.8, Vladivostok=15.5/15.5/15.5}
 ```
 

@@ -42,10 +42,10 @@ parserSpec = do
                 <> celsiusBS
 
             (Observation (Station s) (Celsius c)) = unsafeParse input
-         in (s == stationName) && fromString (show c) == B.filter (/= 46) celsiusBS
+         in (s == stationName) && fromString (show c) == celsiusBS
 
     it "Should correctly handle edge cases" $ do
       evaluate (unsafeParse "Buenos Aires,12.0") `shouldThrow` errorCall "no ';' found in \"Buenos Aires,12.0\""
       evaluate (unsafeParse "Tokyo;12") `shouldThrow` anyErrorCall
       evaluate (unsafeParse "Aukland;.2") `shouldThrow` anyErrorCall
-      unsafeParse ";12.0" `shouldBe` Observation (Station "") (Celsius 120)
+      unsafeParse ";12.0" `shouldBe` Observation (Station "") (Celsius 12.0)

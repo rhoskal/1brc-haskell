@@ -12,7 +12,7 @@ import RIO.ByteString qualified as B
 newtype Station = Station {unStation :: ByteString}
   deriving (Eq, Ord, Show)
 
-newtype Celsius = Celsius {unCelsius :: Int16}
+newtype Celsius = Celsius {unCelsius :: Double}
   deriving (Eq, Ord, Show)
 
 data Observation = Observation
@@ -21,7 +21,7 @@ data Observation = Observation
   }
   deriving (Eq, Ord, Show)
 
-pCelsius :: ByteString -> Int16
+pCelsius :: ByteString -> Double
 pCelsius !input =
   -- c2w '-' == 45
   case B.index input 0 of
@@ -31,13 +31,13 @@ pCelsius !input =
       case B.index input 1 of
         46 ->
           let !c2 = B.index input 2
-           in (d2i c1 * 10) + d2i c2
+           in fromIntegral (d2i c1 * 10 + d2i c2) / 10.0
         !c2 ->
           let !c3 = B.index input 3
-           in (d2i c1 * 100) + (d2i c2 * 10) + d2i c3
+           in fromIntegral (d2i c1 * 100 + d2i c2 * 10 + d2i c3) / 10.0
   where
     -- c2w '0' == 48
-    d2i :: Word8 -> Int16
+    d2i :: Word8 -> Int
     d2i !c = fromIntegral c - 48
 
 unsafeParse :: ByteString -> Observation

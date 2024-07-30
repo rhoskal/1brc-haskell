@@ -179,6 +179,7 @@ test-suite 1brc-test
     -- Modules included in this executable, other than Main.
     other-modules:
         ParserSpec
+        SummarySpec
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
