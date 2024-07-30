@@ -42,7 +42,7 @@ formatSummary (Summary !sMin' !sMax' !sTotal' !sCount') =
   B.concat
     [ fromString $ show $ round' sMin',
       "/",
-      fromString $ show $ round' (sTotal' / fromIntegral sCount'),
+      fromString $ show $ round' (round' sTotal' / fromIntegral sCount'),
       "/",
       fromString $ show $ round' sMax'
     ]
