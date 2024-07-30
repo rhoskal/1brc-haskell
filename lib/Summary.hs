@@ -1,25 +1,19 @@
-module Summary
-  ( Summary,
-    formatSummary,
-    mergeSummary,
-    mkInitialSummary,
-  )
-where
+module Summary where
 
 import Parser (Celsius (..))
 import RIO
-import Text.Printf
+import RIO.ByteString qualified as B
 
 data Summary = Summary
-  { sMin :: {-# UNPACK #-} !Int16,
-    sMax :: {-# UNPACK #-} !Int16,
-    sTotal :: {-# UNPACK #-} !Int64,
+  { sMin :: {-# UNPACK #-} !Double,
+    sMax :: {-# UNPACK #-} !Double,
+    sTotal :: {-# UNPACK #-} !Double,
     sCount :: {-# UNPACK #-} !Int32
   }
   deriving (Show)
 
 mkInitialSummary :: Celsius -> Summary
-mkInitialSummary (Celsius !c) = Summary c c (fromIntegral c) 1
+mkInitialSummary (Celsius !c) = Summary c c c 1
 
 mergeSummary :: Summary -> Summary -> Summary
 mergeSummary !s1 !s2 =
@@ -29,14 +23,32 @@ mergeSummary !s1 !s2 =
       !sCount' = sCount s1 + sCount s2
    in Summary sMin' sMax' sTotal' sCount'
 
+-- | Mimic Java's `Math.round()`
+round' :: Double -> Double
+round' n =
+  let scaled :: Double
+      scaled = n * 10.0
+
+      r :: Double
+      r = fromIntegral (round scaled :: Int)
+
+      rounded :: Double
+      rounded
+        | abs (r - scaled) == 0.5 =
+            if n < 0.0
+              then signum n * fromIntegral (floor (abs scaled) :: Int)
+              else signum n * fromIntegral (ceiling (abs scaled) :: Int)
+        | otherwise = fromIntegral (round scaled :: Int)
+   in rounded / 10.0
+
 formatSummary :: Summary -> ByteString
-formatSummary !summary =
-  let sMin' :: Double
-      !sMin' = fromIntegral (sMin summary) / 10.0
+formatSummary (Summary !sMin' !sMax' !sTotal' !sCount') =
+  B.concat
+    [ fromString $ show $ round' sMin',
+      "/",
+      fromString $ show $ (sTotal' / fromIntegral sCount'),
+      "/",
+      fromString $ show $ round' sMax'
+    ]
 
-      sMax' :: Double
-      !sMax' = fromIntegral (sMax summary) / 10.0
 
-      sMean' :: Double
-      !sMean' = (fromIntegral (sTotal summary) / fromIntegral (sCount summary)) / 10.0
-   in fromString $ printf "%.1f/%.1f/%.1f" sMin' sMean' sMax'
