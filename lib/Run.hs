@@ -76,7 +76,7 @@ parseFile !filePath !chunkSize = do
 run :: RIO App ()
 run = do
   env <- ask
-  logDebug "Running v6..."
+  logDebug "Running v7..."
   let !filePath = aoInputFilePath $ view appOptionsL env
   let !chunkSize = aoChunkSize $ view appOptionsL env
   processed <- liftIO $ parseFile filePath chunkSize
