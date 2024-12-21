@@ -88,7 +88,7 @@ library
 
     -- Other library packages from which modules are imported.
     build-depends:
-        base ^>=4.18.2.1,
+        base ^>=4.20.0.0,
         rio,
         rio-prettyprint
 
@@ -119,7 +119,7 @@ executable 1brc
 
     -- Other library packages from which modules are imported.
     build-depends:
-        base ^>=4.18.2.1,
+        base ^>=4.20.0.0,
         1brc,
         optparse-applicative,
         rio,
@@ -152,7 +152,7 @@ executable bench
 
     -- Other library packages from which modules are imported.
     build-depends:
-        base ^>=4.18.2.1,
+        base ^>=4.20.0.0,
         1brc,
         criterion,
         rio
@@ -195,7 +195,7 @@ test-suite 1brc-test
 
     -- Test dependencies.
     build-depends:
-        base ^>=4.18.2.1,
+        base ^>=4.20.0.0,
         1brc,
         hspec,
         QuickCheck,
